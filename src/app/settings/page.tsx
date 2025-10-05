@@ -56,13 +56,6 @@ export default function SettingsPage() {
                             <CardDescription>Gérez les informations de votre profil public.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-20 w-20">
-                                    <AvatarImage src="https://picsum.photos/seed/10/200/200" data-ai-hint="person" />
-                                    <AvatarFallback>AD</AvatarFallback>
-                                </Avatar>
-                                <Button variant="outline">Changer la photo</Button>
-                            </div>
                             <div className="space-y-2">
                                 <Label htmlFor="name">Nom</Label>
                                 <Input id="name" defaultValue="Admin Doe" />
