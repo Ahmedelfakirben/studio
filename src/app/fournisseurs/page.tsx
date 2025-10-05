@@ -1,7 +1,9 @@
 
+'use client';
+import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, MoreHorizontal } from "lucide-react"
+import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
 import Link from "next/link"
 import {
     Card,
@@ -26,8 +28,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Input } from '@/components/ui/input';
 
-const fournisseurs = [
+const allFournisseurs = [
     {
         id: "fourn-001",
         name: "Matériaux Express",
@@ -46,9 +49,14 @@ const fournisseurs = [
         initials: "AD",
         totalBilled: "9,750.00€",
     },
-]
+];
 
 export default function FournisseursPage() {
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const fournisseurs = allFournisseurs.filter(f => 
+        f.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Fournisseurs">
@@ -63,6 +71,16 @@ export default function FournisseursPage() {
                 <CardHeader>
                     <CardTitle>Liste des Fournisseurs</CardTitle>
                     <CardDescription>Consultez et gérez tous vos fournisseurs.</CardDescription>
+                     <div className="relative mt-4">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Filtrer par nom..."
+                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Table>

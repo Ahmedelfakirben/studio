@@ -1,7 +1,9 @@
 
+'use client';
+import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, MoreHorizontal } from "lucide-react"
+import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
 import Link from "next/link"
 import {
     Card,
@@ -26,8 +28,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Input } from '@/components/ui/input';
 
-const clients = [
+const allClients = [
     {
         id: "client-001",
         name: "Chantier Central",
@@ -63,9 +66,14 @@ const clients = [
         projects: 1,
         totalBilled: "28,202.50€",
     },
-]
+];
 
 export default function ClientsListPage() {
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const clients = allClients.filter(client => 
+        client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Clients">
@@ -80,6 +88,16 @@ export default function ClientsListPage() {
                 <CardHeader>
                     <CardTitle>Liste des Clients</CardTitle>
                     <CardDescription>Consultez et gérez tous vos clients.</CardDescription>
+                     <div className="relative mt-4">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Filtrer par nom..."
+                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Table>

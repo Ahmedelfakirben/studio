@@ -1,8 +1,10 @@
 
+'use client';
+import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { PlusCircle, MoreHorizontal } from "lucide-react"
+import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
 import Link from "next/link"
 import {
     Card,
@@ -26,8 +28,9 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from '@/components/ui/input';
 
-const rentalSheets = [
+const allRentalSheets = [
     {
         id: "loc-juillet-2024",
         month: "Juillet 2024",
@@ -42,9 +45,15 @@ const rentalSheets = [
         amount: "5,200.00€",
         status: "Facturé",
     },
-]
+];
 
 export default function MaterialRentalListPage() {
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const rentalSheets = allRentalSheets.filter(sheet => 
+        sheet.month.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sheet.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Location de Matériel">
@@ -59,6 +68,16 @@ export default function MaterialRentalListPage() {
                 <CardHeader>
                     <CardTitle>Suivi des Locations</CardTitle>
                     <CardDescription>Consultez et gérez vos feuilles de location mensuelles.</CardDescription>
+                     <div className="relative mt-4">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Filtrer par mois ou statut..."
+                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Table>

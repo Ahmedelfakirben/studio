@@ -1,8 +1,10 @@
 
+'use client';
+import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { PlusCircle, MoreHorizontal } from "lucide-react"
+import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
 import Link from "next/link"
 import {
     Card,
@@ -26,8 +28,9 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from '@/components/ui/input';
 
-const deliveryNotes = [
+const allDeliveryNotes = [
     {
         id: "BL-2024-001",
         client: "Chantier Central",
@@ -52,9 +55,16 @@ const deliveryNotes = [
         date: "2024-07-20",
         status: "Annulé",
     },
-]
+];
 
 export default function DeliveryNotesListPage() {
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const deliveryNotes = allDeliveryNotes.filter(note => 
+        note.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        note.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        note.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Bons de Livraison">
@@ -69,6 +79,16 @@ export default function DeliveryNotesListPage() {
                 <CardHeader>
                     <CardTitle>Liste des Bons de Livraison</CardTitle>
                     <CardDescription>Consultez et gérez tous vos bons de livraison.</CardDescription>
+                     <div className="relative mt-4">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Filtrer par N°, client ou statut..."
+                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Table>
