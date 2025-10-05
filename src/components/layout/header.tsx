@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 
 const breadcrumbLabels: { [key: string]: string } = {
   dashboard: 'Tableau de Bord',
+  clients: 'Clients',
   prefactures: 'Préfactures',
   factures: 'Factures',
   'bons-de-livraison': 'Bons de Livraison',

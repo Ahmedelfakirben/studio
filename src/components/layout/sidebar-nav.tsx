@@ -16,12 +16,14 @@ import {
   Hammer,
   Settings,
   CircleUser,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const menuItems = [
   { href: '/dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
+  { href: '/clients', label: 'Clients', icon: Users },
   { href: '/prefactures', label: 'Préfactures', icon: FileText },
   { href: '/factures', label: 'Factures', icon: FileText },
   { href: '/bons-de-livraison', label: 'Bons de Livraison', icon: Truck },
