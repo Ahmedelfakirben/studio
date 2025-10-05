@@ -53,7 +53,7 @@ export default function FournisseursPage() {
         <div className="flex flex-col gap-6">
             <PageHeader title="Fournisseurs">
                  <Button asChild>
-                    <Link href="/factures/new">
+                    <Link href="/fournisseurs/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Ajouter un fournisseur
                     </Link>
@@ -98,7 +98,9 @@ export default function FournisseursPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem>Voir le détail</DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/fournisseurs/${fournisseur.id}/edit`}>Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

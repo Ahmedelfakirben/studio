@@ -70,7 +70,7 @@ export default function ClientsListPage() {
         <div className="flex flex-col gap-6">
             <PageHeader title="Clients">
                 <Button asChild>
-                    <Link href="/factures/new">
+                    <Link href="/clients/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Ajouter un client
                     </Link>
@@ -121,7 +121,9 @@ export default function ClientsListPage() {
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/clients/${client.id}`}>Voir le détail</Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/clients/${client.id}/edit`}>Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

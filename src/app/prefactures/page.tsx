@@ -113,7 +113,9 @@ export default function PreInvoicesListPage() {
                                                     <Link href={`/prefactures/${invoice.id}`}>Voir le détail</Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem>Convertir en Facture</DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/prefactures/${invoice.id}/edit`}>Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

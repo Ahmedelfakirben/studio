@@ -49,7 +49,7 @@ export default function FacturesAchatPage() {
         <div className="flex flex-col gap-6">
             <PageHeader title="Factures (Achat)">
                  <Button asChild>
-                    <Link href="/factures/new">
+                    <Link href="/achats/factures/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Ajouter une facture
                     </Link>
