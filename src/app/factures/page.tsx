@@ -1,80 +1,47 @@
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, File as FileIcon } from "lucide-react"
+import { PlusCircle } from "lucide-react"
 import Link from "next/link"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { InvoiceItemTable } from "@/components/invoice/invoice-item-table"
 
-const invoices = [
-    {
-        id: "FAC-001",
-        client: "Dupont S.A.",
-        date: "2024-06-15",
-        status: "payée",
-        amount: "1,250.00€",
+const invoiceData = {
+    number: "FAC-2024-001",
+    date: "2024-07-26",
+    supplier: {
+        name: "A.L.Y Travaux Publique",
+        address: "123 Rue du Chantier, 75000 Paris",
+        taxId: "FR 12 345678901",
     },
-    {
-        id: "FAC-002",
-        client: "Martin & Fils",
-        date: "2024-06-20",
-        status: "en attente",
-        amount: "850.50€",
+    client: {
+        name: "Mairie de Ville-Haute",
+        address: "1 Place de la Mairie, 75001 Paris",
+        taxId: "FR 55 123456789",
     },
-    {
-        id: "FAC-003",
-        client: "Bernard TP",
-        date: "2024-06-22",
-        status: "en retard",
-        amount: "3,200.00€",
-    },
-    {
-        id: "FAC-004",
-        client: "Petit Terrassement",
-        date: "2024-07-01",
-        status: "payée",
-        amount: "500.00€",
-    },
-    {
-        id: "FAC-005",
-        client: "Leroy VRD",
-        date: "2024-07-05",
-        status: "en attente",
-        amount: "1,800.75€",
-    },
-];
-
-const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-        case "payée":
-            return "secondary";
-        case "en attente":
-            return "outline";
-        case "en retard":
-            return "destructive";
-        default:
-            return "default";
-    }
-}
-
+    project: "Réfection de la voirie Rue Principale",
+    items: [
+        { prix: '1.1', designation: 'Déblais toute nature y compris rocher aux explosifs', unite: 'm3', quantite: 250, prixUnitaire: 28.00 },
+        { prix: '1.2', designation: 'Remblais régalés par couches successives', unite: 'm3', quantite: 1200, prixUnitaire: 4.50 },
+        { prix: '2.1', designation: 'Couche de fondation en grave 0/31.5', unite: 'm3', quantite: 300, prixUnitaire: 40.00 },
+        { prix: '2.2', designation: 'Couche de base en grave 0/20', unite: 'm2', quantite: 1200, prixUnitaire: 1.20 },
+        { prix: '2.3', designation: 'Revêtement en béton bitumineux 0/10', unite: 'm2', quantite: 1200, prixUnitaire: 15.50 },
+        { prix: '3.1', designation: 'Bordures type T2', unite: 'mL', quantite: 150, prixUnitaire: 38.00 },
+        { prix: '3.2', designation: 'Caniveaux type CS1', unite: 'mL', quantite: 300, prixUnitaire: 9.80 },
+        { prix: '4.1', designation: 'Tuyaux PVC série 1 Ø400', unite: 'mL', quantite: 0, prixUnitaire: 0 },
+        { prix: '4.2', designation: 'Regard de visite 100x100', unite: 'U', quantite: 0, prixUnitaire: 0 },
+        { prix: '5.1', designation: 'Fourniture et pose de signalisation verticale des carrefours', unite: 'U', quantite: 0, prixUnitaire: 0 },
+    ],
+};
 
 export default function InvoicesPage() {
     return (
         <div className="flex flex-col gap-6">
-            <PageHeader title="Factures">
+            <PageHeader title="Facture">
                 <Button asChild>
                     <Link href="/factures/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
@@ -83,35 +50,29 @@ export default function InvoicesPage() {
                 </Button>
             </PageHeader>
             <Card>
-                <CardHeader>
-                    <CardTitle>Liste des Factures</CardTitle>
-                    <CardDescription>Consultez et gérez toutes vos factures.</CardDescription>
+                <CardHeader className="space-y-4">
+                    <CardTitle className="text-2xl">FACTURE N° {invoiceData.number}</CardTitle>
+                    <div className="grid md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <h3 className="font-semibold">Fournisseur</h3>
+                            <p>{invoiceData.supplier.name}</p>
+                            <p>{invoiceData.supplier.address}</p>
+                            <p>TVA: {invoiceData.supplier.taxId}</p>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold">Client</h3>
+                            <p>{invoiceData.client.name}</p>
+                            <p>{invoiceData.client.address}</p>
+                            <p>TVA: {invoiceData.client.taxId}</p>
+                        </div>
+                        <div className="text-right">
+                             <p><span className="font-semibold">Date:</span> {invoiceData.date}</p>
+                             <p><span className="font-semibold">Projet:</span> {invoiceData.project}</p>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Facture</TableHead>
-                                <TableHead>Client</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Statut</TableHead>
-                                <TableHead className="text-right">Montant</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {invoices.map((invoice) => (
-                                <TableRow key={invoice.id}>
-                                    <TableCell className="font-medium">{invoice.id}</TableCell>
-                                    <TableCell>{invoice.client}</TableCell>
-                                    <TableCell>{invoice.date}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={getStatusBadgeVariant(invoice.status)} className="capitalize">{invoice.status}</Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">{invoice.amount}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <InvoiceItemTable items={invoiceData.items} />
                 </CardContent>
             </Card>
         </div>
