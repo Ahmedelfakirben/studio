@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -29,14 +30,10 @@ const citerneData = [
 ];
 
 export default function MaterialRentalDetailPage({ params }: { params: { id: string } }) {
-    const [title, setTitle] = React.useState('');
-
-    React.useEffect(() => {
-        if (params && params.id) {
-            const decodedId = decodeURIComponent(params.id).replace('loc-', '').replace(/-/g, ' ');
-            setTitle(`Détail des Locations - ${decodedId}`);
-        }
-    }, [params]);
+    
+    const title = params.id 
+        ? `Détail des Locations - ${decodeURIComponent(params.id).replace('loc-', '').replace(/-/g, ' ')}`
+        : 'Détail des Locations';
 
     const totalNiveleuse = niveleuseData.reduce((sum, item) => sum + (item.jrs * item.pu), 0);
     const totalCiterne = citerneData.reduce((sum, item) => sum + (item.v * item.pu), 0);
