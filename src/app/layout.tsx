@@ -1,3 +1,7 @@
+
+'use client';
+
+import * as React from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
@@ -5,25 +9,41 @@ import { SidebarNav } from '@/components/layout/sidebar-nav';
 import { Header } from '@/components/layout/header';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import { SplashScreen } from '@/components/layout/splash-screen';
 
-export const metadata: Metadata = {
-  title: 'ALY Gestion',
-  description: "Application de gestion pour A.L.Y Travaux Publique",
-};
+// This is a client component, but we can still have metadata
+// export const metadata: Metadata = {
+//   title: 'ALY Gestion',
+//   description: "Application de gestion pour A.L.Y Travaux Publique",
+// };
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // Show splash for 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
+        <title>ALY Gestion</title>
+        <meta name="description" content="Application de gestion pour A.L.Y Travaux Publique" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body bg-background text-foreground antialiased')}>
+        <SplashScreen finished={!loading} />
         <SidebarProvider>
             <Sidebar>
                 <SidebarNav />
