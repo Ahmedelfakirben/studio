@@ -27,7 +27,7 @@ export default function RootLayout({
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // Show splash for 2 seconds
+    }, 3000); // Show splash for 3 seconds
 
     return () => clearTimeout(timer);
   }, []);
