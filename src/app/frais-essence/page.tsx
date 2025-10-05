@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from 'react';
@@ -32,8 +33,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { Input } from '@/components/ui/input';
+import { useSearchParams } from 'next/navigation';
 import { initialGasExpenses, getGasExpenses } from '@/lib/data';
 import { SearchInput } from '@/components/search-input';
 
@@ -46,7 +46,8 @@ type Expense = typeof initialGasExpenses[0];
 
 export default function GasExpensesPage({ searchParams }: { searchParams: { search?: string } }) {
     // This page must remain a client component because it has state management for deleting items.
-    const searchTerm = searchParams.search || '';
+    const sParams = useSearchParams();
+    const searchTerm = sParams.get('search') || '';
     const [expenses, setExpenses] = React.useState(() => getGasExpenses(searchTerm));
     const { toast } = useToast();
     
