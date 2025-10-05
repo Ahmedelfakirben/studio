@@ -35,9 +35,6 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
     const totalCiterne = citerneData.reduce((sum, item) => sum + (item.v * item.pu), 0);
     const grandTotal = totalNiveleuse + totalCiterne;
     
-    const title = params.id ? `Détail des Locations - ${decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ')}` : '';
-
-
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Location Matériel - Juillet 2024">
@@ -61,7 +58,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
 
             <Card>
                 <CardHeader>
-                    <CardTitle>{title}</CardTitle>
+                    <CardTitle>{params.id ? `Détail des Locations - ${decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ')}` : ''}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-8">
                     {/* Tabla Niveleuse */}
