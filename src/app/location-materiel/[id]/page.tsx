@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFoo
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Printer, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
@@ -34,6 +35,16 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
     const totalNiveleuse = niveleuseData.reduce((sum, item) => sum + (item.jrs * item.pu), 0);
     const totalCiterne = citerneData.reduce((sum, item) => sum + (item.v * item.pu), 0);
     const grandTotal = totalNiveleuse + totalCiterne;
+    
+    const [title, setTitle] = React.useState<string>('');
+
+    React.useEffect(() => {
+        if (params.id) {
+            const decodedId = decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ');
+            setTitle(`Détail des Locations - ${decodedId}`);
+        }
+    }, [params.id]);
+
 
     return (
         <div className="flex flex-col gap-6">
@@ -58,7 +69,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Détail des Locations - {decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ')}</CardTitle>
+                    {title ? <CardTitle>{title}</CardTitle> : <Skeleton className="h-8 w-1/2" />}
                 </CardHeader>
                 <CardContent className="space-y-8">
                     {/* Tabla Niveleuse */}
@@ -90,7 +101,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
                                     ))}
                                 </TableBody>
                                 <TableFooter>
-                                    <TableRow>
+                                     <TableRow>
                                         <TableCell colSpan={4} className="text-right font-bold text-base">TOTAL NIVELEUSE</TableCell>
                                         <TableCell className="text-right font-bold text-base">{formatCurrency(totalNiveleuse)}</TableCell>
                                     </TableRow>
@@ -113,7 +124,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
                                         <TableHead className="w-1/5">N° BL</TableHead>
                                         <TableHead className="w-1/5 text-center">V</TableHead>
                                         <TableHead className="w-1/5 text-right">PU</TableHead>
-                                        <TableHead className="w-1/5 text-right">PT</TableHead>
+                                        <TableHead className="w-1/s text-right">PT</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
