@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Event {
     type: string;
@@ -86,7 +87,7 @@ export default function SettingsPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="address">Adresse</Label>
-                                <Input id="address" defaultValue="123 Rue du Chantier, 75000 Paris" />
+                                <Textarea id="address" defaultValue="123 Rue du Chantier, 75000 Paris" />
                             </div>
                         </CardContent>
                         <CardFooter>
