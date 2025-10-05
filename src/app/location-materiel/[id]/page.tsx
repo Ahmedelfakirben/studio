@@ -1,10 +1,9 @@
-
 'use client';
 
 import * as React from 'react';
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter as ShadcnTableFooter } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Printer, Share2 } from 'lucide-react';
 import Link from 'next/link';
@@ -29,15 +28,23 @@ const citerneData = [
     { date: '12/07/2024', bl: 'BL-C-04', v: 2, pu: 80 },
 ];
 
-
 export default function MaterialRentalDetailPage({ params }: { params: { id: string } }) {
+    const [title, setTitle] = React.useState('');
+
+    React.useEffect(() => {
+        if (params && params.id) {
+            const decodedId = decodeURIComponent(params.id).replace('loc-', '').replace(/-/g, ' ');
+            setTitle(`Détail des Locations - ${decodedId}`);
+        }
+    }, [params]);
+
     const totalNiveleuse = niveleuseData.reduce((sum, item) => sum + (item.jrs * item.pu), 0);
     const totalCiterne = citerneData.reduce((sum, item) => sum + (item.v * item.pu), 0);
     const grandTotal = totalNiveleuse + totalCiterne;
     
     return (
         <div className="flex flex-col gap-6">
-            <PageHeader title="Location Matériel - Juillet 2024">
+            <PageHeader title="Location Matériel - Fiche de Location">
                  <Button variant="outline" asChild>
                     <Link href="/location-materiel">
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -58,7 +65,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
 
             <Card>
                 <CardHeader>
-                    <CardTitle>{params.id ? `Détail des Locations - ${decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ')}` : ''}</CardTitle>
+                    <CardTitle>{title}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-8">
                     {/* Tabla Niveleuse */}
@@ -89,12 +96,12 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
                                         </TableRow>
                                     ))}
                                 </TableBody>
-                                <TableFooter>
+                                <ShadcnTableFooter>
                                      <TableRow>
                                         <TableCell colSpan={4} className="text-right font-bold text-base">TOTAL NIVELEUSE</TableCell>
                                         <TableCell className="text-right font-bold text-base">{formatCurrency(totalNiveleuse)}</TableCell>
                                     </TableRow>
-                                </TableFooter>
+                                </ShadcnTableFooter>
                             </Table>
                         </div>
                     </div>
@@ -127,12 +134,12 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
                                         </TableRow>
                                     ))}
                                 </TableBody>
-                                <TableFooter>
+                                <ShadcnTableFooter>
                                     <TableRow>
                                         <TableCell colSpan={4} className="text-right font-bold text-base">TOTAL CITERNE</TableCell>
                                         <TableCell className="text-right font-bold text-base">{formatCurrency(totalCiterne)}</TableCell>
                                     </TableRow>
-                                </TableFooter>
+                                </ShadcnTableFooter>
                             </Table>
                         </div>
                     </div>
