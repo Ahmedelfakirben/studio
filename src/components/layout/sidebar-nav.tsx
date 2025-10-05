@@ -21,6 +21,7 @@ import {
   Users,
   ShoppingCart,
   ShoppingBag,
+  History,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -49,6 +50,7 @@ const achatSubItems = [
 const bottomMenuItems = [
   { href: '/frais-essence', label: 'Frais d\'Essence', icon: Fuel },
   { href: '/location-materiel', label: 'Location Matériel', icon: Hammer },
+  { href: '/historique', label: 'Historique', icon: History },
 ];
 
 export function SidebarNav() {
