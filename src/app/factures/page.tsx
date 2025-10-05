@@ -1,47 +1,67 @@
+
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { PlusCircle, MoreHorizontal, FileDown } from "lucide-react"
 import Link from "next/link"
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
+    CardDescription,
 } from "@/components/ui/card"
-import { InvoiceItemTable } from "@/components/invoice/invoice-item-table"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-const invoiceData = {
-    number: "FAC-2024-001",
-    date: "2024-07-26",
-    supplier: {
-        name: "A.L.Y Travaux Publique",
-        address: "123 Rue du Chantier, 75000 Paris",
-        taxId: "FR 12 345678901",
+const invoices = [
+    {
+        id: "FAC-2024-001",
+        client: "Mairie de Ville-Haute",
+        date: "2024-07-26",
+        amount: "51,648.00€",
+        status: "Payée",
     },
-    client: {
-        name: "Mairie de Ville-Haute",
-        address: "1 Place de la Mairie, 75001 Paris",
-        taxId: "FR 55 123456789",
+    {
+        id: "FAC-2024-002",
+        client: "Constructa S.A.",
+        date: "2024-07-15",
+        amount: "12,350.50€",
+        status: "En attente",
     },
-    project: "Réfection de la voirie Rue Principale",
-    items: [
-        { prix: '1.1', designation: 'Déblais toute nature y compris rocher aux explosifs', unite: 'm3', quantite: 250, prixUnitaire: 28.00 },
-        { prix: '1.2', designation: 'Remblais régalés par couches successives', unite: 'm3', quantite: 1200, prixUnitaire: 4.50 },
-        { prix: '2.1', designation: 'Couche de fondation en grave 0/31.5', unite: 'm3', quantite: 300, prixUnitaire: 40.00 },
-        { prix: '2.2', designation: 'Couche de base en grave 0/20', unite: 'm2', quantite: 1200, prixUnitaire: 1.20 },
-        { prix: '2.3', designation: 'Revêtement en béton bitumineux 0/10', unite: 'm2', quantite: 1200, prixUnitaire: 15.50 },
-        { prix: '3.1', designation: 'Bordures type T2', unite: 'mL', quantite: 150, prixUnitaire: 38.00 },
-        { prix: '3.2', designation: 'Caniveaux type CS1', unite: 'mL', quantite: 300, prixUnitaire: 9.80 },
-        { prix: '4.1', designation: 'Tuyaux PVC série 1 Ø400', unite: 'mL', quantite: 0, prixUnitaire: 0 },
-        { prix: '4.2', designation: 'Regard de visite 100x100', unite: 'U', quantite: 0, prixUnitaire: 0 },
-        { prix: '5.1', designation: 'Fourniture et pose de signalisation verticale des carrefours', unite: 'U', quantite: 0, prixUnitaire: 0 },
-    ],
-};
+    {
+        id: "FAC-2024-003",
+        client: "BTP-IDF",
+        date: "2024-07-05",
+        amount: "8,900.00€",
+        status: "En retard",
+    },
+     {
+        id: "FAC-2024-004",
+        client: "Chantier Central",
+        date: "2024-06-28",
+        amount: "23,450.00€",
+        status: "Payée",
+    },
+]
 
-export default function InvoicesPage() {
+export default function InvoicesListPage() {
     return (
         <div className="flex flex-col gap-6">
-            <PageHeader title="Facture">
+            <PageHeader title="Factures">
                 <Button asChild>
                     <Link href="/factures/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
@@ -50,29 +70,67 @@ export default function InvoicesPage() {
                 </Button>
             </PageHeader>
             <Card>
-                <CardHeader className="space-y-4">
-                    <CardTitle className="text-2xl">FACTURE N° {invoiceData.number}</CardTitle>
-                    <div className="grid md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                            <h3 className="font-semibold">Fournisseur</h3>
-                            <p>{invoiceData.supplier.name}</p>
-                            <p>{invoiceData.supplier.address}</p>
-                            <p>TVA: {invoiceData.supplier.taxId}</p>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold">Client</h3>
-                            <p>{invoiceData.client.name}</p>
-                            <p>{invoiceData.client.address}</p>
-                            <p>TVA: {invoiceData.client.taxId}</p>
-                        </div>
-                        <div className="text-right">
-                             <p><span className="font-semibold">Date:</span> {invoiceData.date}</p>
-                             <p><span className="font-semibold">Projet:</span> {invoiceData.project}</p>
-                        </div>
-                    </div>
+                <CardHeader>
+                    <CardTitle>Liste des Factures</CardTitle>
+                    <CardDescription>Consultez et gérez toutes vos factures.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <InvoiceItemTable items={invoiceData.items} />
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Facture</TableHead>
+                                <TableHead>Client</TableHead>
+                                <TableHead>Date d'émission</TableHead>
+                                <TableHead className="text-right">Montant</TableHead>
+                                <TableHead className="text-center">Statut</TableHead>
+                                <TableHead>
+                                    <span className="sr-only">Actions</span>
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {invoices.map((invoice) => (
+                                <TableRow key={invoice.id}>
+                                    <TableCell className="font-medium">
+                                        <Link href={`/factures/${invoice.id}`} className="hover:underline">
+                                            {invoice.id}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>{invoice.client}</TableCell>
+                                    <TableCell>{invoice.date}</TableCell>
+                                    <TableCell className="text-right">{invoice.amount}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Badge variant={
+                                            invoice.status === "Payée" ? "secondary" : invoice.status === "En retard" ? "destructive" : "outline"
+                                        }>
+                                            {invoice.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Toggle menu</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/factures/${invoice.id}`}>Voir le détail</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <FileDown className="mr-2 h-4 w-4" />
+                                                    Télécharger
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
         </div>
