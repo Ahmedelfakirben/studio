@@ -104,9 +104,7 @@ export default function MaterialRentalListPage() {
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/location-materiel/${sheet.id}`}>Voir le détail</Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href="/factures/new">Modifier</Link>
-                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

@@ -98,9 +98,7 @@ export default function FournisseursPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem>Voir le détail</DropdownMenuItem>
-                                                <DropdownMenuItem asChild>
-                                                     <Link href="/factures/new">Modifier</Link>
-                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
