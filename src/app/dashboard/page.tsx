@@ -6,7 +6,7 @@ import { CreditCard, DollarSign, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
-import { getDashboardStats } from '@/lib/data';
+import { getDashboardStats, getChartData } from '@/lib/data';
 import { RecentExpenses } from '@/components/dashboard/recent-expenses';
 
 
@@ -18,6 +18,7 @@ export default async function DashboardPage() {
     purchaseInvoicesCount, 
     activeClients 
   } = await getDashboardStats();
+  const chartData = await getChartData();
 
   return (
     <div className="flex flex-col gap-6">
@@ -51,7 +52,7 @@ export default async function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-7">
-            <RevenueChart />
+            <RevenueChart chartData={chartData} />
         </div>
         <div className="lg:col-span-5">
             <RecentInvoices />

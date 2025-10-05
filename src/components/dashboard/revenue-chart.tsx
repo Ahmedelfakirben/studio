@@ -1,7 +1,8 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from 'recharts';
-import { getChartData } from '@/lib/data';
 
 const chartConfig = {
   revenus: {
@@ -14,8 +15,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export async function RevenueChart() {
-  const chartData = await getChartData();
+export function RevenueChart({ chartData }: { chartData: any[] }) {
   return (
     <Card className="h-full">
       <CardHeader>
