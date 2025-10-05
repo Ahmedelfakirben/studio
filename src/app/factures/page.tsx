@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from '@/components/ui/input';
 
-const allInvoices = [
+export const allInvoices = [
     {
         id: "FAC-2024-001",
         client: "Mairie de Ville-Haute",

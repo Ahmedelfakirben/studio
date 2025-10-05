@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from '@/components/ui/input';
 
-const allRentalSheets = [
+export const allRentalSheets = [
     {
         id: "loc-juillet-2024",
         month: "Juillet 2024",

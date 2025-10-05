@@ -1,11 +1,25 @@
+'use client';
 import { PageHeader } from '@/components/page-header';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
 import { RecentInvoices } from '@/components/dashboard/recent-invoices';
-import { CreditCard, DollarSign, FileText, Users } from 'lucide-react';
+import { CreditCard, DollarSign, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { allInvoices as salesInvoices } from '../factures/page';
+import { allInvoices as purchaseInvoices } from '../achats/factures/page';
+import { allClients } from '../clients/page';
+import { RecentExpenses } from '@/components/dashboard/recent-expenses';
+
+const parseAmount = (amount: string) => {
+    return parseFloat(amount.replace(/[^0-9,-]+/g, "").replace(",", "."));
+};
+
+const totalRevenue = salesInvoices.reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
+const totalExpenses = purchaseInvoices.reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
+const activeClients = allClients.length;
+
 
 export default function DashboardPage() {
   return (
@@ -18,30 +32,24 @@ export default function DashboardPage() {
           </Link>
         </Button>
       </PageHeader>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard
-          title="Revenu Total (30j)"
-          value="45,231.89€"
-          change="+20.1% depuis le mois dernier"
+          title="Revenu Total (Brut)"
+          value={`${totalRevenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`}
+          change={`${salesInvoices.length} factures émises`}
           icon={DollarSign}
         />
         <StatCard
-          title="Dépenses (30j)"
-          value="12,145.20€"
-          change="-5.2% depuis le mois dernier"
+          title="Dépenses Totales"
+          value={`${totalExpenses.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`}
+          change={`${purchaseInvoices.length} factures d'achat`}
           icon={CreditCard}
         />
         <StatCard
           title="Clients Actifs"
-          value="+23"
-          change="+2 depuis le mois dernier"
+          value={`+${activeClients}`}
+          change="Total des clients enregistrés"
           icon={Users}
-        />
-        <StatCard
-          title="Factures en Attente"
-          value="15"
-          change="+5 par rapport à hier"
-          icon={FileText}
         />
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -50,6 +58,11 @@ export default function DashboardPage() {
         </div>
         <div className="lg:col-span-5">
             <RecentInvoices />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-6">
+        <div>
+          <RecentExpenses />
         </div>
       </div>
     </div>

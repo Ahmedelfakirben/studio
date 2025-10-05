@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Printer, Trash2 } from "lucide-react"
+import { PlusCircle, Printer, Trash2, Search } from "lucide-react"
 import {
     Card,
     CardContent,
@@ -33,13 +33,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
 
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
 };
 
-const initialGasExpenses = [
+export const initialGasExpenses = [
     { id: 1, date: '01/07/2024', bl: 'BL-G-001', ds: 'Véhicule A - Gasoil', mt: 55.50 },
     { id: 2, date: '02/07/2024', bl: 'BL-G-002', ds: 'Véhicule B - Gasoil', mt: 62.00 },
     { id: 3, date: '03/07/2024', bl: 'BL-G-003', ds: 'Camion 1 - Gasoil', mt: 150.25 },
@@ -56,11 +57,10 @@ type Expense = typeof initialGasExpenses[0];
 
 export default function GasExpensesPage() {
     const [expenses, setExpenses] = React.useState(initialGasExpenses);
+    const [searchTerm, setSearchTerm] = React.useState('');
     const { toast } = useToast();
-    const router = useRouter();
 
     const handleDelete = (expenseToDelete: Expense) => {
-        // In a real app, you would get this from a session
         const user = "Admin Doe"; 
         const event = {
             type: "Suppression de dépense",
@@ -69,8 +69,6 @@ export default function GasExpensesPage() {
             details: `Le gasto d'essence avec BL N° ${expenseToDelete.bl} d'un montant de ${formatCurrency(expenseToDelete.mt)} a été supprimé.`,
         };
 
-        // This is a simulation of storing the event.
-        // In a real app, this would be an API call to your backend.
         const storedEvents = JSON.parse(localStorage.getItem('app_events') || '[]');
         localStorage.setItem('app_events', JSON.stringify([...storedEvents, event]));
         
@@ -80,12 +78,14 @@ export default function GasExpensesPage() {
             title: "Dépense supprimée",
             description: `Le gasto avec BL N° ${expenseToDelete.bl} a été supprimé avec succès.`,
         });
-
-        // Optionally, you can redirect or refresh data
-        // router.refresh();
     };
 
-    const totalTTC = expenses.reduce((sum, expense) => sum + expense.mt, 0);
+    const filteredExpenses = expenses.filter(expense => 
+        expense.bl.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        expense.ds.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalTTC = filteredExpenses.reduce((sum, expense) => sum + expense.mt, 0);
 
     return (
         <div className="flex flex-col gap-6">
@@ -105,6 +105,16 @@ export default function GasExpensesPage() {
                 <CardHeader>
                     <CardTitle>Suivi des Dépenses de Carburant</CardTitle>
                     <CardDescription>STATION AFRIQUIA - Juillet 2024</CardDescription>
+                     <div className="relative mt-4">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Filtrer par N° BL ou désignation..."
+                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="border rounded-lg overflow-hidden">
@@ -119,7 +129,7 @@ export default function GasExpensesPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {expenses.map((expense) => (
+                                {filteredExpenses.map((expense) => (
                                     <TableRow key={expense.id}>
                                         <TableCell>{expense.date}</TableCell>
                                         <TableCell>{expense.bl}</TableCell>
@@ -156,7 +166,7 @@ export default function GasExpensesPage() {
                             </TableBody>
                             <TableFooter>
                                  <TableRow>
-                                    <TableCell colSpan={4} className="text-right font-bold text-base text-primary">TOTAL TTC</TableCell>
+                                    <TableCell colSpan={3} className="text-right font-bold text-base text-primary">TOTAL TTC</TableCell>
                                     <TableCell className="text-right font-bold text-base text-primary">{formatCurrency(totalTTC)}</TableCell>
                                     <TableCell />
                                 </TableRow>

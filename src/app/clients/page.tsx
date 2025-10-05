@@ -30,7 +30,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Input } from '@/components/ui/input';
 
-const allClients = [
+export const allClients = [
     {
         id: "client-001",
         name: "Chantier Central",

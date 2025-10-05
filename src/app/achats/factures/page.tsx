@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from '@/components/ui/input';
 
-const allInvoices = [
+export const allInvoices = [
     {
         id: "FA-2024-001",
         fournisseur: "Matériaux Express",
