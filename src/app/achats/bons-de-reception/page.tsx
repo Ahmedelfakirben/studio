@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PlusCircle, MoreHorizontal } from "lucide-react"
+import Link from 'next/link';
 import {
     Card,
     CardContent,
@@ -51,9 +52,11 @@ export default function BonsDeReceptionPage() {
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Bons de Réception">
-                 <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Ajouter un bon de réception
+                 <Button asChild>
+                    <Link href="/factures/new">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Ajouter un bon de réception
+                    </Link>
                 </Button>
             </PageHeader>
             <Card>

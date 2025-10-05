@@ -115,7 +115,9 @@ export default function DeliveryNotesListPage() {
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/bons-de-livraison/${note.id}`}>Voir le détail</Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/factures/new">Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

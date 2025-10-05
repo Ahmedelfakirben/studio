@@ -52,9 +52,11 @@ export default function FournisseursPage() {
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Fournisseurs">
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Ajouter un fournisseur
+                 <Button asChild>
+                    <Link href="/factures/new">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Ajouter un fournisseur
+                    </Link>
                 </Button>
             </PageHeader>
             <Card>
@@ -96,7 +98,9 @@ export default function FournisseursPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem>Voir le détail</DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                     <Link href="/factures/new">Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

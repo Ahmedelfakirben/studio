@@ -48,9 +48,11 @@ export default function PrefacturesAchatPage() {
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Préfactures (Achat)">
-                 <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Ajouter une préfacture
+                 <Button asChild>
+                    <Link href="/factures/new">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Ajouter une préfacture
+                    </Link>
                 </Button>
             </PageHeader>
             <Card>
@@ -97,7 +99,9 @@ export default function PrefacturesAchatPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem>Voir le détail</DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/factures/new">Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

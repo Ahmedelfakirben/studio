@@ -48,9 +48,11 @@ export default function MaterialRentalListPage() {
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Location de Matériel">
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Créer une feuille de location
+                <Button asChild>
+                    <Link href="/factures/new">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Créer une feuille de location
+                    </Link>
                 </Button>
             </PageHeader>
             <Card>
@@ -102,7 +104,9 @@ export default function MaterialRentalListPage() {
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/location-materiel/${sheet.id}`}>Voir le détail</Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/factures/new">Modifier</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

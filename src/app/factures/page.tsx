@@ -119,7 +119,9 @@ export default function InvoicesListPage() {
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/factures/${invoice.id}`}>Voir le détail</Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/factures/new">Modifier</Link>
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem>
                                                     <FileDown className="mr-2 h-4 w-4" />
                                                     Télécharger
