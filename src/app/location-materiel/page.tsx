@@ -1,140 +1,117 @@
 
-'use client';
+import { PageHeader } from "@/components/page-header"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { PlusCircle, MoreHorizontal } from "lucide-react"
+import Link from "next/link"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/ui/card"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-import * as React from 'react';
-import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
-import { Button } from '@/components/ui/button';
-import { PlusCircle, Printer } from 'lucide-react';
+const rentalSheets = [
+    {
+        id: "loc-juillet-2024",
+        month: "Juillet 2024",
+        date: "2024-07-31",
+        amount: "3,740.00€",
+        status: "Finalisé",
+    },
+    {
+        id: "loc-juin-2024",
+        month: "Juin 2024",
+        date: "2024-06-30",
+        amount: "5,200.00€",
+        status: "Facturé",
+    },
+]
 
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
-};
-
-const niveleuseData = [
-    { date: '01/07/2024', bl: 'BL-N-01', jrs: 1, pu: 500 },
-    { date: '02/07/2024', bl: 'BL-N-02', jrs: 1, pu: 500 },
-    { date: '03/07/2024', bl: 'BL-N-03', jrs: 1, pu: 500 },
-];
-
-const citerneData = [
-    { date: '05/07/2024', bl: 'BL-C-01', v: 2, pu: 80 },
-    { date: '06/07/2024', bl: 'BL-C-02', v: 3, pu: 80 },
-];
-
-export default function MaterialRentalPage() {
-    const totalNiveleuse = niveleuseData.reduce((sum, item) => sum + (item.jrs * item.pu), 0);
-    const totalCiterne = citerneData.reduce((sum, item) => sum + (item.v * item.pu), 0);
-    const grandTotal = totalNiveleuse + totalCiterne;
-
+export default function MaterialRentalListPage() {
     return (
         <div className="flex flex-col gap-6">
             <PageHeader title="Location de Matériel">
-                <div className="flex items-center gap-2">
-                    <Button variant="outline">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Ajouter une location
-                    </Button>
-                    <Button>
-                        <Printer className="mr-2 h-4 w-4" />
-                        Imprimer / PDF
-                    </Button>
-                </div>
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Créer une feuille de location
+                </Button>
             </PageHeader>
-
             <Card>
                 <CardHeader>
-                    <CardTitle>Suivi des Locations - Juillet 2024</CardTitle>
+                    <CardTitle>Suivi des Locations</CardTitle>
+                    <CardDescription>Consultez et gérez vos feuilles de location mensuelles.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-8">
-                    {/* Tabla Niveleuse */}
-                    <div>
-                        <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="text-lg font-semibold text-primary">NIVELEUSE</h3>
-                            <p className="text-sm font-medium">Fournisseur: RACHID</p>
-                        </div>
-                        <div className="border rounded-lg overflow-hidden">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-muted/50">
-                                        <TableHead className="w-1/4">DATE</TableHead>
-                                        <TableHead className="w-1/4">N° BL</TableHead>
-                                        <TableHead className="w-1/4 text-center">JRS</TableHead>
-                                        <TableHead className="w-1/4 text-right">PU</TableHead>
-                                        <TableHead className="w-1/4 text-right">PT</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {niveleuseData.map((item, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{item.date}</TableCell>
-                                            <TableCell>{item.bl}</TableCell>
-                                            <TableCell className="text-center">{item.jrs}</TableCell>
-                                            <TableCell className="text-right">{formatCurrency(item.pu)}</TableCell>
-                                            <TableCell className="text-right font-medium">{formatCurrency(item.jrs * item.pu)}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                                <TableFooter>
-                                    <TableRow>
-                                        <TableCell colSpan={4} className="text-right font-bold text-base">TOTAL NIVELEUSE</TableCell>
-                                        <TableCell className="text-right font-bold text-base">{formatCurrency(totalNiveleuse)}</TableCell>
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
-                        </div>
-                    </div>
-
-                    {/* Tabla Citerne */}
-                    <div>
-                         <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="text-lg font-semibold text-primary">CITERNE</h3>
-                            <p className="text-sm font-medium">Fournisseur: REDA</p>
-                        </div>
-                        <div className="border rounded-lg overflow-hidden">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-muted/50">
-                                        <TableHead className="w-1/4">DATE</TableHead>
-                                        <TableHead className="w-1/4">N° BL</TableHead>
-                                        <TableHead className="w-1/4 text-center">V</TableHead>
-                                        <TableHead className="w-1/4 text-right">PU</TableHead>
-                                        <TableHead className="w-1/4 text-right">PT</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {citerneData.map((item, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{item.date}</TableCell>
-                                            <TableCell>{item.bl}</TableCell>
-                                            <TableCell className="text-center">{item.v}</TableCell>
-                                            <TableCell className="text-right">{formatCurrency(item.pu)}</TableCell>
-                                            <TableCell className="text-right font-medium">{formatCurrency(item.v * item.pu)}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                                <TableFooter>
-                                    <TableRow>
-                                        <TableCell colSpan={4} className="text-right font-bold text-base">TOTAL CITERNE</TableCell>
-                                        <TableCell className="text-right font-bold text-base">{formatCurrency(totalCiterne)}</TableCell>
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
-                        </div>
-                    </div>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Document</TableHead>
+                                <TableHead>Date de fin</TableHead>
+                                <TableHead className="text-right">Montant Total</TableHead>
+                                <TableHead className="text-center">Statut</TableHead>
+                                <TableHead>
+                                    <span className="sr-only">Actions</span>
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {rentalSheets.map((sheet) => (
+                                <TableRow key={sheet.id}>
+                                    <TableCell className="font-medium">
+                                        <Link href={`/location-materiel/${sheet.id}`} className="hover:underline">
+                                            {sheet.month}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>{sheet.date}</TableCell>
+                                    <TableCell className="text-right">{sheet.amount}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Badge variant={
+                                            sheet.status === "Facturé" ? "secondary" 
+                                            : "outline"
+                                        }>
+                                            {sheet.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Toggle menu</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/location-materiel/${sheet.id}`}>Voir le détail</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </CardContent>
-                <CardFooter className="pt-6 mt-6 border-t">
-                    <div className="w-full flex justify-end">
-                        <div className="w-full max-w-xs space-y-2">
-                            <div className="flex justify-between font-bold text-lg">
-                                <span>TOTAL GÉNÉRAL HT:</span>
-                                <span className="text-primary">{formatCurrency(grandTotal)}</span>
-                            </div>
-                        </div>
-                    </div>
-                </CardFooter>
             </Card>
         </div>
-    );
+    )
 }
