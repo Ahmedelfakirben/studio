@@ -1,6 +1,48 @@
+
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { PlusCircle, MoreHorizontal } from "lucide-react"
+import Link from "next/link"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/ui/card"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+const preInvoices = [
+    {
+        id: "PA-2024-001",
+        fournisseur: "Matériaux Express",
+        date: "2024-07-20",
+        amount: "15,820.00€",
+        status: "Approuvée",
+    },
+    {
+        id: "PA-2024-002",
+        fournisseur: "Acier Durable S.L.",
+        date: "2024-07-18",
+        amount: "9,750.00€",
+        status: "En attente",
+    },
+]
 
 export default function PrefacturesAchatPage() {
     return (
@@ -11,16 +53,60 @@ export default function PrefacturesAchatPage() {
                     Ajouter une préfacture
                 </Button>
             </PageHeader>
-            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm h-[60vh]">
-                <div className="flex flex-col items-center gap-1 text-center">
-                    <h3 className="text-2xl font-bold tracking-tight">
-                        Bientôt disponible
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                        La gestion des préfactures d'achat sera bientôt disponible ici.
-                    </p>
-                </div>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Liste des Préfactures d'Achat</CardTitle>
+                    <CardDescription>Consultez et gérez toutes vos préfactures fournisseurs.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Préfacture</TableHead>
+                                <TableHead>Fournisseur</TableHead>
+                                <TableHead>Date d'émission</TableHead>
+                                <TableHead className="text-right">Montant</TableHead>
+                                <TableHead className="text-center">Statut</TableHead>
+                                <TableHead>
+                                    <span className="sr-only">Actions</span>
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {preInvoices.map((invoice) => (
+                                <TableRow key={invoice.id}>
+                                    <TableCell className="font-medium">{invoice.id}</TableCell>
+                                    <TableCell>{invoice.fournisseur}</TableCell>
+                                    <TableCell>{invoice.date}</TableCell>
+                                    <TableCell className="text-right">{invoice.amount}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Badge variant={
+                                            invoice.status === "Approuvée" ? "secondary" : invoice.status === "Refusée" ? "destructive" : "outline"
+                                        }>
+                                            {invoice.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Toggle menu</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem>Voir le détail</DropdownMenuItem>
+                                                <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     )
 }
