@@ -43,23 +43,21 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body bg-background text-foreground antialiased')}>
-        {loading ? (
-          <SplashScreen finished={!loading} />
-        ) : (
-          <>
-            <SidebarProvider>
-                <Sidebar>
-                    <SidebarNav />
-                </Sidebar>
-                <SidebarInset>
-                    <Header />
-                    <main className="p-4 sm:p-6 lg:p-8">
-                        {children}
-                    </main>
-                </SidebarInset>
-            </SidebarProvider>
-            <Toaster />
-          </>
+        {loading && <SplashScreen finished={!loading} />}
+        
+        {!loading && (
+          <SidebarProvider>
+              <Sidebar>
+                  <SidebarNav />
+              </Sidebar>
+              <SidebarInset>
+                  <Header />
+                  <main className="p-4 sm:p-6 lg:p-8">
+                      {children}
+                  </main>
+              </SidebarInset>
+              <Toaster />
+          </SidebarProvider>
         )}
       </body>
     </html>
