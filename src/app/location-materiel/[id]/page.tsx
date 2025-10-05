@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFoo
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Printer, Share2 } from 'lucide-react';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
@@ -36,14 +35,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
     const totalCiterne = citerneData.reduce((sum, item) => sum + (item.v * item.pu), 0);
     const grandTotal = totalNiveleuse + totalCiterne;
     
-    const [title, setTitle] = React.useState<string>('');
-
-    React.useEffect(() => {
-        if (params.id) {
-            const decodedId = decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ');
-            setTitle(`Détail des Locations - ${decodedId}`);
-        }
-    }, [params.id]);
+    const title = params.id ? `Détail des Locations - ${decodeURIComponent(params.id).replace('loc-', '').replace('-', ' ')}` : '';
 
 
     return (
@@ -69,7 +61,7 @@ export default function MaterialRentalDetailPage({ params }: { params: { id: str
 
             <Card>
                 <CardHeader>
-                    {title ? <CardTitle>{title}</CardTitle> : <Skeleton className="h-8 w-1/2" />}
+                    <CardTitle>{title}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-8">
                     {/* Tabla Niveleuse */}
