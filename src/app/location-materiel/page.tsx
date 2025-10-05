@@ -1,6 +1,3 @@
-
-'use client';
-import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,31 +25,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from '@/components/ui/input';
+import { getAllRentalSheets } from "@/lib/data"
+import { SearchInput } from "@/components/search-input"
 
-export const allRentalSheets = [
-    {
-        id: "loc-juillet-2024",
-        month: "Juillet 2024",
-        date: "2024-07-31",
-        amount: "3,740.00€",
-        status: "Finalisé",
-    },
-    {
-        id: "loc-juin-2024",
-        month: "Juin 2024",
-        date: "2024-06-30",
-        amount: "5,200.00€",
-        status: "Facturé",
-    },
-];
-
-export default function MaterialRentalListPage() {
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const rentalSheets = allRentalSheets.filter(sheet => 
-        sheet.month.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sheet.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+export default function MaterialRentalListPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchTerm = searchParams.search || '';
+    const rentalSheets = getAllRentalSheets(searchTerm);
     
     return (
         <div className="flex flex-col gap-6">
@@ -70,13 +48,7 @@ export default function MaterialRentalListPage() {
                     <CardDescription>Consultez et gérez vos feuilles de location mensuelles.</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par mois ou statut..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par mois ou statut..." />
                     </div>
                 </CardHeader>
                 <CardContent>

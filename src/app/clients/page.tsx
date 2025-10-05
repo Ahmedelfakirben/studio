@@ -1,6 +1,3 @@
-
-'use client';
-import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
@@ -28,51 +25,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Input } from '@/components/ui/input';
+import { getAllClients } from "@/lib/data"
+import { SearchInput } from "@/components/search-input"
 
-export const allClients = [
-    {
-        id: "client-001",
-        name: "Chantier Central",
-        initials: "CC",
-        projects: 2,
-        totalBilled: "23,450.00€",
-    },
-    {
-        id: "client-002",
-        name: "Mairie de Ville-Haute",
-        initials: "MV",
-        projects: 1,
-        totalBilled: "51,648.00€",
-    },
-    {
-        id: "client-003",
-        name: "Constructa S.A.",
-        initials: "CS",
-        projects: 2,
-        totalBilled: "24,701.00€",
-    },
-    {
-        id: "client-004",
-        name: "BTP-IDF",
-        initials: "BI",
-        projects: 1,
-        totalBilled: "8,900.00€",
-    },
-    {
-        id: "client-005",
-        name: "Client S.A.",
-        initials: "CS",
-        projects: 1,
-        totalBilled: "28,202.50€",
-    },
-];
 
-export default function ClientsListPage() {
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const clients = allClients.filter(client => 
-        client.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+export default function ClientsListPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchTerm = searchParams.search || '';
+    const clients = getAllClients(searchTerm);
     
     return (
         <div className="flex flex-col gap-6">
@@ -90,13 +49,7 @@ export default function ClientsListPage() {
                     <CardDescription>Consultez et gérez tous vos clients.</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par nom..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par nom..." />
                     </div>
                 </CardHeader>
                 <CardContent>

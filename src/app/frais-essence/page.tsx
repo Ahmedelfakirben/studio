@@ -32,33 +32,27 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
+import { initialGasExpenses, getGasExpenses } from '@/lib/data';
+import { SearchInput } from '@/components/search-input';
 
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
 };
 
-export const initialGasExpenses = [
-    { id: 1, date: '01/07/2024', bl: 'BL-G-001', ds: 'Véhicule A - Gasoil', mt: 55.50 },
-    { id: 2, date: '02/07/2024', bl: 'BL-G-002', ds: 'Véhicule B - Gasoil', mt: 62.00 },
-    { id: 3, date: '03/07/2024', bl: 'BL-G-003', ds: 'Camion 1 - Gasoil', mt: 150.25 },
-    { id: 4, date: '04/07/2024', bl: 'BL-G-004', ds: 'Véhicule A - Gasoil', mt: 58.75 },
-    { id: 5, date: '05/07/2024', bl: 'BL-G-005', ds: 'Groupe Électrogène', mt: 45.00 },
-    { id: 6, date: '08/07/2024', bl: 'BL-G-006', ds: 'Camion 2 - AdBlue', mt: 30.00 },
-    { id: 7, date: '09/07/2024', bl: 'BL-G-007', ds: 'Véhicule B - Gasoil', mt: 61.30 },
-    { id: 8, date: '10/07/2024', bl: 'BL-G-008', ds: 'Camion 1 - Gasoil', mt: 145.80 },
-    { id: 9, date: '11/07/2024', bl: 'BL-G-009', ds: 'Véhicule A - Gasoil', mt: 59.90 },
-    { id: 10, date: '12/07/2024', bl: 'BL-G-010', ds: 'Nacelle - Essence', mt: 35.00 },
-];
-
 type Expense = typeof initialGasExpenses[0];
 
-export default function GasExpensesPage() {
-    const [expenses, setExpenses] = React.useState(initialGasExpenses);
-    const [searchTerm, setSearchTerm] = React.useState('');
+export default function GasExpensesPage({ searchParams }: { searchParams: { search?: string } }) {
+    // This page must remain a client component because it has state management for deleting items.
+    const searchTerm = searchParams.search || '';
+    const [expenses, setExpenses] = React.useState(() => getGasExpenses(searchTerm));
     const { toast } = useToast();
+    
+    React.useEffect(() => {
+        setExpenses(getGasExpenses(searchTerm));
+    }, [searchTerm]);
 
     const handleDelete = (expenseToDelete: Expense) => {
         const user = "Admin Doe"; 
@@ -69,9 +63,11 @@ export default function GasExpensesPage() {
             details: `Le gasto d'essence avec BL N° ${expenseToDelete.bl} d'un montant de ${formatCurrency(expenseToDelete.mt)} a été supprimé.`,
         };
 
+        // In a real app, this would be an API call. Here we use localStorage for demonstration.
         const storedEvents = JSON.parse(localStorage.getItem('app_events') || '[]');
         localStorage.setItem('app_events', JSON.stringify([...storedEvents, event]));
         
+        // This is a mock deletion. In a real app, you'd call an API and then refetch the data.
         setExpenses(currentExpenses => currentExpenses.filter(expense => expense.id !== expenseToDelete.id));
         
         toast({
@@ -80,12 +76,7 @@ export default function GasExpensesPage() {
         });
     };
 
-    const filteredExpenses = expenses.filter(expense => 
-        expense.bl.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        expense.ds.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const totalTTC = filteredExpenses.reduce((sum, expense) => sum + expense.mt, 0);
+    const totalTTC = expenses.reduce((sum, expense) => sum + expense.mt, 0);
 
     return (
         <div className="flex flex-col gap-6">
@@ -107,13 +98,7 @@ export default function GasExpensesPage() {
                     <CardDescription>STATION AFRIQUIA - Juillet 2024</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par N° BL ou désignation..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par N° BL ou désignation..." />
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -129,7 +114,7 @@ export default function GasExpensesPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredExpenses.map((expense) => (
+                                {expenses.map((expense) => (
                                     <TableRow key={expense.id}>
                                         <TableCell>{expense.date}</TableCell>
                                         <TableCell>{expense.bl}</TableCell>

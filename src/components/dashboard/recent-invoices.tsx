@@ -3,12 +3,12 @@ import {
     AvatarFallback,
   } from "@/components/ui/avatar"
   import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-  import { allInvoices } from "@/app/factures/page"
+  import { getAllSalesInvoices } from "@/lib/data"
   import Link from "next/link"
   import { Badge } from "../ui/badge";
   
   export function RecentInvoices() {
-    const recentInvoices = allInvoices.slice(0, 5);
+    const recentInvoices = getAllSalesInvoices().slice(0, 5);
   
     return (
       <Card className="h-full">

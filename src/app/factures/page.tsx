@@ -1,6 +1,3 @@
-
-'use client';
-import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,46 +25,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from '@/components/ui/input';
+import { getAllSalesInvoices } from "@/lib/data"
+import { SearchInput } from "@/components/search-input"
 
-export const allInvoices = [
-    {
-        id: "FAC-2024-001",
-        client: "Mairie de Ville-Haute",
-        date: "2024-07-26",
-        amount: "51,648.00€",
-        status: "Payée",
-    },
-    {
-        id: "FAC-2024-002",
-        client: "Constructa S.A.",
-        date: "2024-07-15",
-        amount: "12,350.50€",
-        status: "En attente",
-    },
-    {
-        id: "FAC-2024-003",
-        client: "BTP-IDF",
-        date: "2024-07-05",
-        amount: "8,900.00€",
-        status: "En retard",
-    },
-     {
-        id: "FAC-2024-004",
-        client: "Chantier Central",
-        date: "2024-06-28",
-        amount: "23,450.00€",
-        status: "Payée",
-    },
-];
-
-export default function InvoicesListPage() {
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const invoices = allInvoices.filter(invoice => 
-        invoice.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoice.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoice.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+export default function InvoicesListPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchTerm = searchParams.search || '';
+    const invoices = getAllSalesInvoices(searchTerm);
 
     return (
         <div className="flex flex-col gap-6">
@@ -85,13 +48,7 @@ export default function InvoicesListPage() {
                     <CardDescription>Consultez et gérez toutes vos factures.</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par N°, client ou statut..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par N°, client ou statut..." />
                     </div>
                 </CardHeader>
                 <CardContent>

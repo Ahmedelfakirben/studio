@@ -1,6 +1,3 @@
-
-'use client';
-import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,36 +25,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from '@/components/ui/input';
+import { getAllReceptionNotes } from "@/lib/data"
+import { SearchInput } from "@/components/search-input"
 
-const allReceptionNotes = [
-    {
-        id: "BR-2024-001",
-        fournisseur: "Matériaux Express",
-        date: "2024-07-24",
-        status: "Reçu",
-    },
-    {
-        id: "BR-2024-002",
-        fournisseur: "Béton Pro",
-        date: "2024-07-22",
-        status: "Partiellement Reçu",
-    },
-    {
-        id: "BR-2024-003",
-        fournisseur: "Acier Durable S.L.",
-        date: "2024-07-20",
-        status: "En attente",
-    },
-];
-
-export default function BonsDeReceptionPage() {
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const receptionNotes = allReceptionNotes.filter(note => 
-        note.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        note.fournisseur.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        note.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+export default function BonsDeReceptionPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchTerm = searchParams.search || '';
+    const receptionNotes = getAllReceptionNotes(searchTerm);
 
     return (
         <div className="flex flex-col gap-6">
@@ -75,13 +48,7 @@ export default function BonsDeReceptionPage() {
                     <CardDescription>Consultez et gérez vos réceptions de matériel.</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par N°, fournisseur ou statut..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par N°, fournisseur ou statut..." />
                     </div>
                 </CardHeader>
                 <CardContent>

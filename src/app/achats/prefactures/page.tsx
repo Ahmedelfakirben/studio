@@ -1,6 +1,3 @@
-
-'use client';
-import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,32 +25,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from '@/components/ui/input';
+import { getAllPurchasePreInvoices } from "@/lib/data"
+import { SearchInput } from "@/components/search-input"
 
-const allPreInvoices = [
-    {
-        id: "PA-2024-001",
-        fournisseur: "Matériaux Express",
-        date: "2024-07-20",
-        amount: "15,820.00€",
-        status: "Approuvée",
-    },
-    {
-        id: "PA-2024-002",
-        fournisseur: "Acier Durable S.L.",
-        date: "2024-07-18",
-        amount: "9,750.00€",
-        status: "En attente",
-    },
-];
-
-export default function PrefacturesAchatPage() {
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const preInvoices = allPreInvoices.filter(invoice => 
-        invoice.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoice.fournisseur.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoice.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+export default function PrefacturesAchatPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchTerm = searchParams.search || '';
+    const preInvoices = getAllPurchasePreInvoices(searchTerm);
 
     return (
         <div className="flex flex-col gap-6">
@@ -71,13 +48,7 @@ export default function PrefacturesAchatPage() {
                     <CardDescription>Consultez et gérez toutes vos préfactures fournisseurs.</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par N°, fournisseur ou statut..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par N°, fournisseur ou statut..." />
                     </div>
                 </CardHeader>
                 <CardContent>

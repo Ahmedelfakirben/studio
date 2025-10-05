@@ -1,4 +1,3 @@
-
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, MoreHorizontal, PlusCircle } from "lucide-react"
@@ -32,117 +31,32 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { getClientById } from "@/lib/data"
 
-// Mock data - in a real app, this would be fetched based on the client ID
-const clientData = {
-    "client-001": {
-        name: "Chantier Central",
-        prefactures: [],
-        factures: [
-            {
-                id: "FAC-2024-004",
-                date: "2024-06-28",
-                amount: "23,450.00€",
-                status: "Payée",
-            },
-        ],
-        bonsDeLivraison: [
-             {
-                id: "BL-2024-001",
-                date: "2024-07-26",
-                status: "Livré",
-            },
-        ]
-    },
-    "client-002": {
-        name: "Mairie de Ville-Haute",
-        prefactures: [
-            {
-                id: "PRE-2024-002",
-                date: "2024-07-20",
-                amount: "51,648.00€",
-                status: "En attente",
-            },
-        ],
-        factures: [
-             {
-                id: "FAC-2024-001",
-                date: "2024-07-26",
-                amount: "51,648.00€",
-                status: "Payée",
-            },
-        ],
-        bonsDeLivraison: [
-            {
-                id: "BL-2024-002",
-                date: "2024-07-24",
-                status: "Livré",
-            },
-        ]
-    },
-    "client-003": {
-        name: "Constructa S.A.",
-        prefactures: [
-            {
-                id: "PRE-2024-003",
-                date: "2024-07-10",
-                amount: "12,350.50€",
-                status: "Refusée",
-            },
-        ],
-        factures: [
-            {
-                id: "FAC-2024-002",
-                client: "Constructa S.A.",
-                date: "2024-07-15",
-                amount: "12,350.50€",
-                status: "En attente",
-            },
-        ],
-        bonsDeLivraison: [
-             {
-                id: "BL-2024-003",
-                date: "2024-07-22",
-                status: "Partiellement livré",
-            },
-        ]
-    },
-     "client-004": {
-        name: "BTP-IDF",
-        prefactures: [],
-        factures: [
-            {
-                id: "FAC-2024-003",
-                date: "2024-07-05",
-                amount: "8,900.00€",
-                status: "En retard",
-            },
-        ],
-        bonsDeLivraison: [
-            {
-                id: "BL-2024-004",
-                date: "2024-07-20",
-                status: "Annulé",
-            },
-        ]
-    },
-     "client-005": {
-        name: "Client S.A.",
-        prefactures: [
-            {
-                id: "PRE-2024-001",
-                date: "2024-07-25",
-                amount: "28,202.50€",
-                status: "Approuvée",
-            },
-        ],
-        factures: [],
-        bonsDeLivraison: []
+
+export default function ClientDetailPage({ params }: { params: { id: string } }) {
+    const client = getClientById(params.id);
+    
+    if (!client) {
+        return (
+             <div className="flex flex-col gap-6">
+                <PageHeader title="Client Inconnu">
+                     <Button variant="outline" asChild>
+                        <Link href="/clients">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Retour aux clients
+                        </Link>
+                    </Button>
+                </PageHeader>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Client non trouvé</CardTitle>
+                        <CardDescription>Le client que vous recherchez n'existe pas.</CardDescription>
+                    </CardHeader>
+                </Card>
+             </div>
+        )
     }
-}
-
-export default function ClientDetailPage({ params }: { params: { id: keyof typeof clientData } }) {
-    const client = clientData[params.id] || { name: "Client Inconnu", prefactures: [], factures: [], bonsDeLivraison: [] };
 
     return (
         <div className="flex flex-col gap-6">

@@ -1,4 +1,3 @@
-'use client';
 import { PageHeader } from '@/components/page-header';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
@@ -7,21 +6,19 @@ import { CreditCard, DollarSign, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
-import { allInvoices as salesInvoices } from '../factures/page';
-import { allInvoices as purchaseInvoices } from '../achats/factures/page';
-import { allClients } from '../clients/page';
+import { getDashboardStats } from '@/lib/data';
 import { RecentExpenses } from '@/components/dashboard/recent-expenses';
 
-const parseAmount = (amount: string) => {
-    return parseFloat(amount.replace(/[^0-9,-]+/g, "").replace(",", "."));
-};
 
-const totalRevenue = salesInvoices.reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
-const totalExpenses = purchaseInvoices.reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
-const activeClients = allClients.length;
+export default async function DashboardPage() {
+  const { 
+    totalRevenue, 
+    salesInvoicesCount, 
+    totalExpenses, 
+    purchaseInvoicesCount, 
+    activeClients 
+  } = await getDashboardStats();
 
-
-export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title="Tableau de Bord">
@@ -36,13 +33,13 @@ export default function DashboardPage() {
         <StatCard
           title="Revenu Total (Brut)"
           value={`${totalRevenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`}
-          change={`${salesInvoices.length} factures émises`}
+          change={`${salesInvoicesCount} factures émises`}
           icon={DollarSign}
         />
         <StatCard
           title="Dépenses Totales"
           value={`${totalExpenses.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`}
-          change={`${purchaseInvoices.length} factures d'achat`}
+          change={`${purchaseInvoicesCount} factures d'achat`}
           icon={CreditCard}
         />
         <StatCard

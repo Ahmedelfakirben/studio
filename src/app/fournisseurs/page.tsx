@@ -1,6 +1,3 @@
-
-'use client';
-import * as React from 'react';
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
@@ -28,34 +25,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Input } from '@/components/ui/input';
+import { getAllFournisseurs } from "@/lib/data"
+import { SearchInput } from "@/components/search-input"
 
-const allFournisseurs = [
-    {
-        id: "fourn-001",
-        name: "Matériaux Express",
-        initials: "ME",
-        totalBilled: "15,820.00€",
-    },
-    {
-        id: "fourn-002",
-        name: "Béton Pro",
-        initials: "BP",
-        totalBilled: "2,500.00€",
-    },
-    {
-        id: "fourn-003",
-        name: "Acier Durable S.L.",
-        initials: "AD",
-        totalBilled: "9,750.00€",
-    },
-];
-
-export default function FournisseursPage() {
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const fournisseurs = allFournisseurs.filter(f => 
-        f.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+export default function FournisseursPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchTerm = searchParams.search || '';
+    const fournisseurs = getAllFournisseurs(searchTerm);
 
     return (
         <div className="flex flex-col gap-6">
@@ -73,13 +48,7 @@ export default function FournisseursPage() {
                     <CardDescription>Consultez et gérez tous vos fournisseurs.</CardDescription>
                      <div className="relative mt-4">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Filtrer par nom..."
-                            className="w-full rounded-lg bg-muted pl-8 md:w-[320px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <SearchInput placeholder="Filtrer par nom..." />
                     </div>
                 </CardHeader>
                 <CardContent>
