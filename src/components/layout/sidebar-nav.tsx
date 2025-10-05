@@ -7,6 +7,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import {
   LayoutDashboard,
@@ -15,24 +18,36 @@ import {
   Fuel,
   Hammer,
   Settings,
-  CircleUser,
   Users,
+  ShoppingCart,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-const menuItems = [
+const topMenuItems = [
   { href: '/dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
-  { href: '/clients', label: 'Clients', icon: Users },
-  { href: '/prefactures', label: 'Préfactures', icon: FileText },
-  { href: '/factures', label: 'Factures', icon: FileText },
-  { href: '/bons-de-livraison', label: 'Bons de Livraison', icon: Truck },
+];
+
+const venteSubItems = [
+    { href: '/clients', label: 'Clients', icon: Users },
+    { href: '/prefactures', label: 'Préfactures', icon: FileText },
+    { href: '/factures', label: 'Factures', icon: FileText },
+    { href: '/bons-de-livraison', label: 'Bons de Livraison', icon: Truck },
+]
+
+const bottomMenuItems = [
   { href: '/frais-essence', label: 'Frais d\'Essence', icon: Fuel },
   { href: '/location-materiel', label: 'Location Matériel', icon: Hammer },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { state } = useSidebar();
+  
+  const isVenteActive = venteSubItems.some(item => pathname.startsWith(item.href));
 
   return (
     <>
@@ -49,7 +64,48 @@ export function SidebarNav() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {menuItems.map((item) => (
+          {topMenuItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith(item.href)}
+                tooltip={{ children: item.label, side: 'right' }}
+              >
+                <Link href={item.href}>
+                  <item.icon />
+                  <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+            <Collapsible defaultOpen={isVenteActive} asChild>
+                 <SidebarMenuItem>
+                    <div className='relative'>
+                        <CollapsibleTrigger asChild>
+                            <SidebarMenuButton isActive={isVenteActive} className="w-full">
+                                <ShoppingCart/>
+                                <span className="group-data-[collapsible=icon]:hidden flex-1 text-left">Vente</span>
+                                <ChevronRight className={cn("group-data-[collapsible=icon]:hidden h-4 w-4 transition-transform duration-200", isVenteActive && "rotate-90")} />
+                            </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent>
+                         <SidebarMenuSub>
+                            {venteSubItems.map((item) => (
+                                 <SidebarMenuItem key={item.href}>
+                                     <SidebarMenuSubButton asChild isActive={pathname.startsWith(item.href)}>
+                                         <Link href={item.href}>
+                                            <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                                         </Link>
+                                     </SidebarMenuSubButton>
+                                 </SidebarMenuItem>
+                            ))}
+                         </SidebarMenuSub>
+                    </CollapsibleContent>
+                 </SidebarMenuItem>
+            </Collapsible>
+            
+          {bottomMenuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton
                 asChild
