@@ -1,13 +1,13 @@
 
 'use client';
 import * as React from 'react';
+import { useTheme } from 'next-themes';
 import { PageHeader } from "@/components/page-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
@@ -22,11 +22,10 @@ interface Event {
 }
 
 export default function SettingsPage() {
+    const { theme, setTheme } = useTheme();
     const [events, setEvents] = React.useState<Event[]>([]);
 
     React.useEffect(() => {
-        // In a real app, you would fetch this from your database.
-        // We use localStorage here for demonstration purposes.
         const storedEvents = JSON.parse(localStorage.getItem('app_events') || '[]');
         setEvents(storedEvents.sort((a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     }, []);
@@ -109,7 +108,11 @@ export default function SettingsPage() {
                                         Activer pour une interface moins lumineuse.
                                     </p>
                                 </div>
-                                <Switch id="dark-mode" />
+                                <Switch 
+                                    id="dark-mode"
+                                    checked={theme === 'dark'}
+                                    onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                                />
                             </div>
                              <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">

@@ -2,7 +2,6 @@
 'use client';
 
 import * as React from 'react';
-import type { Metadata } from 'next';
 import './globals.css';
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import { SidebarNav } from '@/components/layout/sidebar-nav';
@@ -10,12 +9,7 @@ import { Header } from '@/components/layout/header';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { SplashScreen } from '@/components/layout/splash-screen';
-
-// This is a client component, but we can still have metadata
-// export const metadata: Metadata = {
-//   title: 'ALY Gestion',
-//   description: "Application de gestion pour A.L.Y Travaux Publique",
-// };
+import { ThemeProvider } from '@/components/theme-provider';
 
 export default function RootLayout({
   children,
@@ -32,7 +26,6 @@ export default function RootLayout({
     return () => clearTimeout(timer);
   }, []);
 
-
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
@@ -43,22 +36,29 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body bg-background text-foreground antialiased')}>
-        {loading && <SplashScreen finished={!loading} />}
-        
-        {!loading && (
-          <SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {loading ? (
+            <SplashScreen finished={!loading} />
+          ) : (
+            <SidebarProvider>
               <Sidebar>
-                  <SidebarNav />
+                <SidebarNav />
               </Sidebar>
               <SidebarInset>
-                  <Header />
-                  <main className="p-4 sm:p-6 lg:p-8">
-                      {children}
-                  </main>
+                <Header />
+                <main className="p-4 sm:p-6 lg:p-8">
+                  {children}
+                </main>
               </SidebarInset>
               <Toaster />
-          </SidebarProvider>
-        )}
+            </SidebarProvider>
+          )}
+        </ThemeProvider>
       </body>
     </html>
   );
