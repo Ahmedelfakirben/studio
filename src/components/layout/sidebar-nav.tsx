@@ -20,6 +20,7 @@ import {
   Settings,
   Users,
   ShoppingCart,
+  ShoppingBag,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -38,6 +39,13 @@ const venteSubItems = [
     { href: '/bons-de-livraison', label: 'Bons de Livraison', icon: Truck },
 ]
 
+const achatSubItems = [
+    { href: '/fournisseurs', label: 'Fournisseurs', icon: Users },
+    { href: '/achats/prefactures', label: 'Préfactures', icon: FileText },
+    { href: '/achats/factures', label: 'Factures', icon: FileText },
+    { href: '/achats/bons-de-reception', label: 'Bons de Réception', icon: Truck },
+]
+
 const bottomMenuItems = [
   { href: '/frais-essence', label: 'Frais d\'Essence', icon: Fuel },
   { href: '/location-materiel', label: 'Location Matériel', icon: Hammer },
@@ -48,6 +56,7 @@ export function SidebarNav() {
   const { state } = useSidebar();
   
   const isVenteActive = venteSubItems.some(item => pathname.startsWith(item.href));
+  const isAchatActive = achatSubItems.some(item => pathname.startsWith(item.href));
 
   return (
     <>
@@ -92,6 +101,32 @@ export function SidebarNav() {
                     <CollapsibleContent>
                          <SidebarMenuSub>
                             {venteSubItems.map((item) => (
+                                 <SidebarMenuItem key={item.href}>
+                                     <SidebarMenuSubButton asChild isActive={pathname.startsWith(item.href)}>
+                                         <Link href={item.href}>
+                                            <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                                         </Link>
+                                     </SidebarMenuSubButton>
+                                 </SidebarMenuItem>
+                            ))}
+                         </SidebarMenuSub>
+                    </CollapsibleContent>
+                 </SidebarMenuItem>
+            </Collapsible>
+            <Collapsible defaultOpen={isAchatActive} asChild>
+                 <SidebarMenuItem>
+                    <div className='relative'>
+                        <CollapsibleTrigger asChild>
+                            <SidebarMenuButton isActive={isAchatActive} className="w-full">
+                                <ShoppingBag/>
+                                <span className="group-data-[collapsible=icon]:hidden flex-1 text-left">Achat</span>
+                                <ChevronRight className={cn("group-data-[collapsible=icon]:hidden h-4 w-4 transition-transform duration-200", isAchatActive && "rotate-90")} />
+                            </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent>
+                         <SidebarMenuSub>
+                            {achatSubItems.map((item) => (
                                  <SidebarMenuItem key={item.href}>
                                      <SidebarMenuSubButton asChild isActive={pathname.startsWith(item.href)}>
                                          <Link href={item.href}>
