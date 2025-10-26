@@ -34,69 +34,33 @@ const PrefacturaAchatDetailsPage = ({ params }: { params: { id: string } }) => {
     const fetchPrefactura = async () => {
       try {
         setIsLoading(true);
-        // En un entorno real, esto haría una llamada a la API
-        // const response = await prefacturasAchatService.getById(params.id);
-        // setPrefactura(response.data);
-        
-        // Por ahora, simulamos datos para desarrollo
-        setPrefactura({
-          _id: params.id,
-          numero: `PREF-ACHAT-2024-00${params.id}`,
-          fecha: "2024-09-01",
-          fechaVencimiento: "2024-10-01",
-          proveedor: {
-            _id: "123",
-            nombre: "Fournisseur Example",
-            email: "example@fournisseur.com",
-            telefono: "+33 123456789"
-          },
-          items: [
-            {
-              descripcion: "Matériel informatique",
-              cantidad: 5,
-              precioUnitario: 120,
-              tipoIVA: 20
-            },
-            {
-              descripcion: "Accessoires",
-              cantidad: 10,
-              precioUnitario: 15,
-              tipoIVA: 20
-            }
-          ],
-          totalHT: 750,
-          totalTVA: 150,
-          totalTTC: 900,
-          notas: "Devis valable jusqu'au 31/10/2024"
-        });
+        const response = await prefacturasAchatService.getById(params.id);
+        setPrefactura(response.data);
       } catch (error: any) {
         toast({
           title: "Error",
           description: error.response?.data?.mensaje || "Error al cargar la préfacture",
           variant: "destructive",
         });
+        router.push("/achats/prefactures");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchPrefactura();
-  }, [params.id, toast]);
+  }, [params.id, toast, router]);
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      // En un entorno real, esto haría una llamada a la API
-      // await prefacturasAchatService.delete(params.id);
-      
-      // Simulamos un delay para mostrar el estado de carga
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await prefacturasAchatService.delete(params.id);
+
       toast({
-        title: "Éxito",
-        description: "Préfacture eliminada correctamente",
+        title: "Succès",
+        description: "Préfacture supprimée correctement",
       });
-      
+
       router.push("/achats/prefactures");
     } catch (error: any) {
       toast({

@@ -20,6 +20,15 @@ npx prisma migrate deploy
 echo "🔧 Generating Prisma Client..."
 npx prisma generate
 
+# Ejecutar seed solo si la base de datos está vacía
+echo "🌱 Checking if database needs seeding..."
+if ! npx prisma db execute --stdin <<< "SELECT * FROM Usuario LIMIT 1;" > /dev/null 2>&1; then
+  echo "🌱 Seeding database with initial data..."
+  npm run seed || echo "⚠️  Seed failed or already executed"
+else
+  echo "✅ Database already contains data, skipping seed"
+fi
+
 # Iniciar Backend en segundo plano
 echo "🌐 Starting Backend on port ${PORT:-3001}..."
 node dist/index.js &

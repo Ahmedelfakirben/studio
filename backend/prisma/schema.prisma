@@ -40,17 +40,18 @@ model Cliente {
 
 // Proveedor
 model Proveedor {
-  id              String           @id @default(uuid())
-  razonSocial     String
-  direccion       String
-  numeroTVA       String?
-  telefono        String?
-  email           String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  facturasCompra  FacturaCompra[]
-  bonsRecepcion   BonRecepcion[]
-  locationMateriel LocationMateriel[]
+  id                  String                @id @default(uuid())
+  razonSocial         String
+  direccion           String
+  numeroTVA           String?
+  telefono            String?
+  email               String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  facturasCompra      FacturaCompra[]
+  prefacturasCompra   PrefacturaCompra[]
+  bonsRecepcion       BonRecepcion[]
+  locationMateriel    LocationMateriel[]
 }
 
 // Factura de venta
@@ -100,19 +101,21 @@ model BonLivraison {
 
 // Línea de detalle para facturas y prefacturas
 model LineaDetalle {
-  id              String           @id @default(uuid())
-  numeroPrix      String
-  designacion     String
-  unidad          String
-  cantidad        Float
-  precioUnitario  Float
-  montoHT         Float
-  facturaId       String?
-  factura         Factura?         @relation(fields: [facturaId], references: [id])
-  prefacturaId    String?
-  prefactura      Prefactura?      @relation(fields: [prefacturaId], references: [id])
-  facturaCompraId String?
-  facturaCompra   FacturaCompra?   @relation(fields: [facturaCompraId], references: [id])
+  id                  String              @id @default(uuid())
+  numeroPrix          String
+  designacion         String
+  unidad              String
+  cantidad            Float
+  precioUnitario      Float
+  montoHT             Float
+  facturaId           String?
+  factura             Factura?            @relation(fields: [facturaId], references: [id])
+  prefacturaId        String?
+  prefactura          Prefactura?         @relation(fields: [prefacturaId], references: [id])
+  facturaCompraId     String?
+  facturaCompra       FacturaCompra?      @relation(fields: [facturaCompraId], references: [id])
+  prefacturaCompraId  String?
+  prefacturaCompra    PrefacturaCompra?   @relation(fields: [prefacturaCompraId], references: [id])
 }
 
 // Línea de material para bons de livraison
@@ -126,6 +129,22 @@ model LineaMaterial {
   bonLivraison    BonLivraison     @relation(fields: [bonLivraisonId], references: [id])
   bonRecepcionId  String?
   bonRecepcion    BonRecepcion?    @relation(fields: [bonRecepcionId], references: [id])
+}
+
+// Prefactura de compra
+model PrefacturaCompra {
+  id              String           @id @default(uuid())
+  numero          String           @unique
+  fecha           DateTime
+  referenciaProyecto String?
+  proveedorId     String
+  proveedor       Proveedor        @relation(fields: [proveedorId], references: [id])
+  lineasDetalle   LineaDetalle[]
+  montoHT         Float
+  montTVA         Float
+  montoTTC        Float
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 // Factura de compra

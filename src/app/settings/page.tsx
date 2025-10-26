@@ -43,8 +43,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/lib/api";
-import { Plus, Trash2, KeyRound, Loader2, Shield, User } from "lucide-react";
+import { Plus, Trash2, KeyRound, Loader2, Shield, User, Palette } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ModeToggle } from "@/components/mode-toggle";
 
 interface Usuario {
   id: string;
@@ -205,6 +206,30 @@ export default function SettingsPage() {
           <Button variant="outline" onClick={logout} className="w-full sm:w-auto">
             Déconnexion
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Configuración de Apariencia */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Palette className="h-5 w-5" />
+            Apparence
+          </CardTitle>
+          <CardDescription>
+            Personnalisez l'apparence de l'application avec le mode clair ou sombre
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Thème de l'interface</p>
+              <p className="text-sm text-muted-foreground">
+                Choisissez entre le mode clair, sombre ou système
+              </p>
+            </div>
+            <ModeToggle />
+          </div>
         </CardContent>
       </Card>
 

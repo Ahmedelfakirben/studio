@@ -48,42 +48,15 @@ export default function PrefacturesAchatPage() {
         const fetchPrefactures = async () => {
             try {
                 setIsLoading(true);
-                // En un entorno real, esto haría una llamada a la API
-                // const response = await prefacturasAchatService.getAll();
-                // setPrefactures(response.data);
-                
-                // Mientras tanto, usamos datos de ejemplo
-                setTimeout(() => {
-                    setPrefactures([
-                        {
-                            _id: "PA-2024-001",
-                            numero: "PA-2024-001",
-                            fecha: "2024-07-20",
-                            proveedor: { razonSocial: "Matériaux Express" },
-                            totalHT: 15820.00,
-                            totalTVA: 3164.00,
-                            totalTTC: 18984.00,
-                            status: "Approuvée"
-                        },
-                        {
-                            _id: "PA-2024-002",
-                            numero: "PA-2024-002",
-                            fecha: "2024-07-18",
-                            proveedor: { razonSocial: "Acier Durable S.L." },
-                            totalHT: 9750.00,
-                            totalTVA: 1950.00,
-                            totalTTC: 11700.00,
-                            status: "En attente"
-                        }
-                    ]);
-                    setIsLoading(false);
-                }, 500);
+                const response = await prefacturasAchatService.getAll();
+                setPrefactures(response.data);
             } catch (error: any) {
                 toast({
                     title: "Error",
                     description: error.response?.data?.mensaje || "Error al cargar las prefacturas",
                     variant: "destructive",
                 });
+            } finally {
                 setIsLoading(false);
             }
         };
