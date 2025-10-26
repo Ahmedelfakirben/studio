@@ -1,53 +1,110 @@
+"use client";
 
-'use client'
-
-import { PageHeader } from "@/components/page-header";
+import React, { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import { ClientForm } from "@/components/clients/client-form";
+import { clientesService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data, in a real app you would fetch this based on params.id
-const clientData: { [key: string]: { name: string, address: string, vat: string } } = {
-    "client-001": { name: "Chantier Central", address: "Zone Industrielle Nord, 93200 Saint-Denis", vat: "FR XX XXXXXXXXX" },
-    "client-002": { name: "Mairie de Ville-Haute", address: "1 Place de la Mairie, 75001 Paris", vat: "FR 55 123456789" },
-    "client-003": { name: "Constructa S.A.", address: "456 Avenue des Ponts, 69002 Lyon", vat: "FR XY YYYYYYYYY" },
-    "client-004": { name: "BTP-IDF", address: "789 Boulevard des Bâtisseurs, 92100 Boulogne-Billancourt", vat: "FR XZ ZZZZZZZZZ" },
-    "client-005": { name: "Client S.A.", address: "456 Avenue des Projets, 69000 Lyon", vat: "FR 98 765432109" },
-};
+const EditClientPage: React.FC = () => {
+  const router = useRouter();
+  const params = useParams();
+  const { toast } = useToast();
+  const [cliente, setCliente] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const clientId = params.id as string;
 
-export default function EditClientPage({ params }: { params: { id: string } }) {
-  const client = clientData[params.id] || { name: "", address: "", vat: "" };
+  useEffect(() => {
+    const fetchCliente = async () => {
+      try {
+        setIsLoading(true);
+        const response = await clientesService.getById(clientId);
+        setCliente(response.data);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.response?.data?.mensaje || "Error al cargar el cliente",
+          variant: "destructive",
+        });
+        router.push("/clients");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (clientId) {
+      fetchCliente();
+    }
+  }, [clientId]);
+
+  const handleSubmit = async (data: any) => {
+    try {
+      setIsSubmitting(true);
+      await clientesService.update(clientId, data);
+      toast({
+        title: "Éxito",
+        description: "Cliente actualizado correctamente",
+      });
+      router.push(`/clients/${clientId}`);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al actualizar el cliente",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 max-w-3xl">
+        <Skeleton className="h-12 w-64" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  if (!cliente) {
+    return null;
+  }
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title={`Modifier le Client: ${client.name}`} />
-      <Card>
-        <CardHeader>
-            <CardTitle>Informations du Client</CardTitle>
-            <CardDescription>Mettez à jour les détails du client.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="client-name">Raison Sociale / Nom</Label>
-                <Input id="client-name" defaultValue={client.name} />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="client-address">Adresse</Label>
-                <Textarea id="client-address" defaultValue={client.address} />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="client-vat">N° de TVA</Label>
-                <Input id="client-vat" defaultValue={client.vat} />
-            </div>
-        </CardContent>
-        <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline">Annuler</Button>
-            <Button>Enregistrer les modifications</Button>
-        </CardFooter>
-      </Card>
+    <div className="space-y-6 max-w-3xl">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Editar Cliente</h1>
+          <p className="text-muted-foreground">
+            Modifica la información del cliente
+          </p>
+        </div>
+      </div>
+
+      {/* Formulario */}
+      <ClientForm
+        initialData={{
+          razonSocial: cliente.razonSocial,
+          direccion: cliente.direccion,
+          numeroTVA: cliente.numeroTVA || "",
+          telefono: cliente.telefono || "",
+          email: cliente.email || "",
+        }}
+        onSubmit={handleSubmit}
+        isLoading={isSubmitting}
+        submitLabel="Actualizar Cliente"
+      />
     </div>
-  )
-}
+  );
+};
+
+export default EditClientPage;

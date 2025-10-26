@@ -1,109 +1,87 @@
-import { PageHeader } from "@/components/page-header"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
-import Link from "next/link"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from "@/components/ui/card"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { getAllClients } from "@/lib/data"
-import { SearchInput } from "@/components/search-input"
+"use client";
 
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { ClientTable } from "@/components/clients/client-table";
+import { clientesService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ClientsListPage({ searchParams }: { searchParams: { search?: string } }) {
-    const searchTerm = searchParams.search || '';
-    const clients = getAllClients(searchTerm);
-    
-    return (
-        <div className="flex flex-col gap-6">
-            <PageHeader title="Clients">
-                <Button asChild>
-                    <Link href="/clients/new">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Ajouter un client
-                    </Link>
-                </Button>
-            </PageHeader>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Liste des Clients</CardTitle>
-                    <CardDescription>Consultez et gérez tous vos clients.</CardDescription>
-                     <div className="relative mt-4">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <SearchInput placeholder="Filtrer par nom..." />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[80px]">Client</TableHead>
-                                <TableHead>Projets Actifs</TableHead>
-                                <TableHead className="text-right">Total Facturé</TableHead>
-                                <TableHead>
-                                    <span className="sr-only">Actions</span>
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {clients.map((client) => (
-                                <TableRow key={client.id}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarFallback>{client.initials}</AvatarFallback>
-                                            </Avatar>
-                                            <Link href={`/clients/${client.id}`} className="font-medium hover:underline">
-                                                {client.name}
-                                            </Link>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{client.projects}</TableCell>
-                                    <TableCell className="text-right">{client.totalBilled}</TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button aria-haspopup="true" size="icon" variant="ghost">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                    <span className="sr-only">Toggle menu</span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={`/clients/${client.id}`}>Voir le détail</Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={`/clients/${client.id}/edit`}>Modifier</Link>
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+const ClientsListPage: React.FC = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [clientes, setClientes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchClientes = async () => {
+    try {
+      setIsLoading(true);
+      const response = await clientesService.getAll();
+      setClientes(response.data);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al cargar los clientes",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClientes();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await clientesService.delete(id);
+      toast({
+        title: "Éxito",
+        description: "Cliente eliminado correctamente",
+      });
+      fetchClientes(); // Recargar la lista
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al eliminar el cliente",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Clientes</h1>
+          <p className="text-muted-foreground">
+            Gestiona todos tus clientes
+          </p>
         </div>
-    )
-}
+        <Button onClick={() => router.push("/clients/new")}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nuevo Cliente
+        </Button>
+      </div>
+
+      {/* Tabla */}
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : (
+        <ClientTable clientes={clientes} onDelete={handleDelete} />
+      )}
+    </div>
+  );
+};
+
+export default ClientsListPage;

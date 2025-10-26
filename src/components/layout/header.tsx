@@ -19,10 +19,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { CircleUser, Search } from 'lucide-react';
+import { CircleUser, Search, LogOut, Settings as SettingsIcon, Shield, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/lib/auth-context';
+import { Badge } from '@/components/ui/badge';
 
 const breadcrumbLabels: { [key: string]: string } = {
   dashboard: 'Tableau de Bord',
@@ -32,6 +34,7 @@ const breadcrumbLabels: { [key: string]: string } = {
   factures: 'Factures',
   'bons-de-livraison': 'Bons de Livraison',
   achat: 'Achat',
+  achats: 'Achat',
   fournisseurs: 'Fournisseurs',
   'bons-de-reception': 'Bons de Réception',
   'frais-essence': "Frais d'Essence",
@@ -42,6 +45,7 @@ const breadcrumbLabels: { [key: string]: string } = {
 export function Header() {
   const pathname = usePathname();
   const pathSegments = pathname.split('/').filter(Boolean);
+  const { user, logout, isAdmin } = useAuth();
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
@@ -83,6 +87,7 @@ export function Header() {
           className="w-full rounded-lg bg-muted pl-8 md:w-[200px] lg:w-[320px]"
         />
       </div>
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">
@@ -90,15 +95,32 @@ export function Header() {
             <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user?.nombre}</p>
+              <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+              <Badge variant={isAdmin ? "default" : "secondary"} className="w-fit mt-1">
+                {isAdmin ? (
+                  <><Shield className="mr-1 h-3 w-3" />Admin</>
+                ) : (
+                  <><User className="mr-1 h-3 w-3" />User</>
+                )}
+              </Badge>
+            </div>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Link href="/settings" className="w-full">Paramètres</Link>
+          <DropdownMenuItem asChild>
+            <Link href="/settings" className="w-full cursor-pointer">
+              <SettingsIcon className="mr-2 h-4 w-4" />
+              Paramètres
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Déconnexion</DropdownMenuItem>
+          <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive">
+            <LogOut className="mr-2 h-4 w-4" />
+            Déconnexion
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

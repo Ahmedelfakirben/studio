@@ -1,117 +1,87 @@
-import { PageHeader } from "@/components/page-header"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { PlusCircle, MoreHorizontal, FileDown, Search } from "lucide-react"
-import Link from "next/link"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from "@/components/ui/card"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { getAllSalesInvoices } from "@/lib/data"
-import { SearchInput } from "@/components/search-input"
+"use client";
 
-export default function InvoicesListPage({ searchParams }: { searchParams: { search?: string } }) {
-    const searchTerm = searchParams.search || '';
-    const invoices = getAllSalesInvoices(searchTerm);
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { FactureTable } from "@/components/factures/facture-table";
+import { facturasService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-    return (
-        <div className="flex flex-col gap-6">
-            <PageHeader title="Factures">
-                <Button asChild>
-                    <Link href="/factures/new">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Créer une facture
-                    </Link>
-                </Button>
-            </PageHeader>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Liste des Factures</CardTitle>
-                    <CardDescription>Consultez et gérez toutes vos factures.</CardDescription>
-                     <div className="relative mt-4">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <SearchInput placeholder="Filtrer par N°, client ou statut..." />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Facture</TableHead>
-                                <TableHead>Client</TableHead>
-                                <TableHead>Date d'émission</TableHead>
-                                <TableHead className="text-right">Montant</TableHead>
-                                <TableHead className="text-center">Statut</TableHead>
-                                <TableHead>
-                                    <span className="sr-only">Actions</span>
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {invoices.map((invoice) => (
-                                <TableRow key={invoice.id}>
-                                    <TableCell className="font-medium">
-                                        <Link href={`/factures/${invoice.id}`} className="hover:underline">
-                                            {invoice.id}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell>{invoice.client}</TableCell>
-                                    <TableCell>{invoice.date}</TableCell>
-                                    <TableCell className="text-right">{invoice.amount}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant={
-                                            invoice.status === "Payée" ? "secondary" : invoice.status === "En retard" ? "destructive" : "outline"
-                                        }>
-                                            {invoice.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button aria-haspopup="true" size="icon" variant="ghost">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                    <span className="sr-only">Toggle menu</span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={`/factures/${invoice.id}`}>Voir le détail</Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={`/factures/${invoice.id}/edit`}>Modifier</Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <FileDown className="mr-2 h-4 w-4" />
-                                                    Télécharger
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+const FacturesListPage: React.FC = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [facturas, setFacturas] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchFacturas = async () => {
+    try {
+      setIsLoading(true);
+      const response = await facturasService.getAll();
+      setFacturas(response.data);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al cargar las facturas",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFacturas();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await facturasService.delete(id);
+      toast({
+        title: "Éxito",
+        description: "Factura eliminada correctamente",
+      });
+      fetchFacturas(); // Recargar la lista
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al eliminar la factura",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Factures de Vente</h1>
+          <p className="text-muted-foreground">
+            Gestiona todas las facturas de venta a clientes
+          </p>
         </div>
-    )
-}
+        <Button onClick={() => router.push("/factures/new")}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nouvelle Facture
+        </Button>
+      </div>
+
+      {/* Tabla */}
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : (
+        <FactureTable facturas={facturas} onDelete={handleDelete} />
+      )}
+    </div>
+  );
+};
+
+export default FacturesListPage;

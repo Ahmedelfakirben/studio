@@ -3,6 +3,45 @@
 Esta es una aplicación de gestión empresarial creada para **A.L.Y Travaux Publique**, diseñada para centralizar y simplificar la administración de documentos comerciales clave. La aplicación está construida sobre una base tecnológica moderna que incluye Next.js, React, TypeScript y ShadCN para los componentes de interfaz.
 
 ## Estructura General del Proyecto
+## Desarrollo local
+
+### Backend
+
+Variables de entorno en `backend/.env`:
+
+```
+PORT=3001
+FRONTEND_URL=http://localhost:9002
+JWT_SECRET=super-secret-change-me
+JWT_EXPIRES_IN=7d
+DATABASE_URL="file:./dev.db"
+```
+
+Comandos:
+
+```
+cd backend
+npm install
+npx prisma migrate dev --name init
+npm run dev
+```
+
+### Frontend
+
+Variables de entorno en `./.env.local` (opcional en local porque usamos rewrite):
+
+```
+BACKEND_URL=http://localhost:3001
+```
+
+Comandos:
+
+```
+npm install
+npm run dev
+```
+
+El frontend se sirve en `http://localhost:9002` y las llamadas a `/api/*` se reescriben al backend en `http://localhost:3001/api/*`.
 
 La aplicación se organiza en torno a cuatro (4) bloques funcionales principales e independientes, cada uno gestionando un área específica del negocio:
 

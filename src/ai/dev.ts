@@ -1,1 +1,1 @@
-// Flows will be imported for their side effects in this file.
+// Eliminado: no hay flujos de IA en entorno local

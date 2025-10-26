@@ -1,183 +1,110 @@
+"use client";
 
-'use client';
+import React, { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { PrefactureForm } from "@/components/prefactures/prefacture-form";
+import { prefacturasService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import * as React from 'react';
-import { PageHeader } from "@/components/page-header"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Textarea } from '@/components/ui/textarea';
+const EditPrefacturePage: React.FC = () => {
+  const router = useRouter();
+  const params = useParams();
+  const { toast } = useToast();
+  const [prefactura, setPrefactura] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-const initialItems = [
-    { id: 1, prix: '1.1', designation: 'Déblais toute nature y compris rocher aux explosifs', unite: 'm3', quantite: 150, prixUnitaire: 25.50 },
-    { id: 2, prix: '1.2', designation: 'Remblais régalés par couches successives', unite: 'm3', quantite: 120, prixUnitaire: 18.00 },
-    { id: 3, prix: '2.1', designation: 'Couche de fondation en grave 0/31.5', unite: 'm3', quantite: 80, prixUnitaire: 45.20 },
-    { id: 4, prix: '2.2', designation: 'Couche de base en grave 0/20', unite: 'm2', quantite: 200, prixUnitaire: 22.00 },
-    { id: 5, prix: '2.3', designation: 'Revêtement en béton bitumineux 0/10', unite: 'm2', quantite: 500, prixUnitaire: 35.75 },
-    { id: 6, prix: '3.1', designation: 'Bordures type T2', unite: 'mL', quantite: 0, prixUnitaire: 0 },
-    { id: 7, prix: '3.2', designation: 'Caniveaux type CS1', unite: 'mL', quantite: 0, prixUnitaire: 0 },
-    { id: 8, prix: '4.1', designation: 'Tuyaux PVC série 1 Ø400', unite: 'mL', quantite: 0, prixUnitaire: 0 },
-    { id: 9, prix: '4.2', designation: 'Regard de visite 100x100', unite: 'U', quantite: 0, prixUnitaire: 0 },
-    { id: 10, prix: '5.1', designation: 'Fourniture et pose de signalisation verticale des carrefours', unite: 'U', quantite: 0, prixUnitaire: 0 },
-];
+  const prefacturaId = params.id as string;
 
-for (let i = initialItems.length + 1; i <= 20; i++) {
-    initialItems.push({ id: i, prix: '', designation: '', unite: '', quantite: 0, prixUnitaire: 0 });
-}
-
-export default function EditPreInvoicePage({ params }: { params: { id: string } }) {
-    const [items, setItems] = React.useState(initialItems);
-    const [totalHT, setTotalHT] = React.useState(0);
-    const [tva, setTva] = React.useState(0);
-    const [totalTTC, setTotalTTC] = React.useState(0);
-
-    const handleItemChange = (id: number, field: string, value: any) => {
-        setItems(prevItems =>
-            prevItems.map(item =>
-                item.id === id ? { ...item, [field]: value } : item
-            )
-        );
+  useEffect(() => {
+    const fetchPrefactura = async () => {
+      try {
+        setIsLoading(true);
+        const response = await prefacturasService.getById(prefacturaId);
+        setPrefactura(response.data);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.response?.data?.mensaje || "Error al cargar la prefactura",
+          variant: "destructive",
+        });
+        router.push("/prefactures");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const calculateTotals = React.useCallback(() => {
-        const newTotalHT = items.reduce((sum, item) => {
-            const quantite = Number(item.quantite) || 0;
-            const prixUnitaire = Number(item.prixUnitaire) || 0;
-            return sum + (quantite * prixUnitaire);
-        }, 0);
-
-        const newTva = newTotalHT * 0.20;
-        const newTotalTTC = newTotalHT + newTva;
-
-        setTotalHT(newTotalHT);
-        setTva(newTva);
-        setTotalTTC(newTotalTTC);
-    }, [items]);
-
-    React.useEffect(() => {
-        calculateTotals();
-    }, [items, calculateTotals]);
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+    if (prefacturaId) {
+      fetchPrefactura();
     }
-    
+  }, [prefacturaId]);
+
+  const handleSubmit = async (data: any) => {
+    try {
+      setIsSubmitting(true);
+      await prefacturasService.update(prefacturaId, data);
+      toast({
+        title: "Éxito",
+        description: "Prefactura actualizada correctamente",
+      });
+      router.push(`/prefactures/${prefacturaId}`);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al actualizar la prefactura",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
     return (
-        <div className="flex flex-col gap-6">
-            <PageHeader title={`Modifier la Préfacture ${params.id}`} />
-            <Card>
-                <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <CardTitle>PRÉFACTURE N° <Input className="w-[150px] inline-block" defaultValue={params.id}/> </CardTitle>
-                        <div className="text-sm">
-                            <Label htmlFor="invoice-date">Date: </Label>
-                            <Input id="invoice-date" type="date" className="w-[150px] inline-block" defaultValue={"2024-07-25"} />
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label>Informations du Fournisseur</Label>
-                            <Textarea placeholder="Raison Sociale, Direction, N° de Identificación Fiscal/Patente" defaultValue="A.L.Y Travaux Publique\n123 Rue du Chantier, 75000 Paris\nFR 12 345678901" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Informations du Client</Label>
-                            <Textarea placeholder="Raison Sociale, Direction, N° de Identificación Fiscal" defaultValue={"Client S.A.\n456 Avenue des Projets, 69000 Lyon\nFR 98 765432109"} />
-                        </div>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="project-ref">Référence du Projet</Label>
-                        <Input id="project-ref" placeholder="Nombre o Referencia del Proyecto" defaultValue={"Aménagement de la place du marché"}/>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[80px]">Nº de PRIX</TableHead>
-                                    <TableHead>DESIGNATION DES OUVRAGES</TableHead>
-                                    <TableHead className="w-[100px]">UNITÉ</TableHead>
-                                    <TableHead className="w-[120px]">QUANTITÉ</TableHead>
-                                    <TableHead className="w-[180px]">PRIX UNITAIRE HT</TableHead>
-                                    <TableHead className="text-right w-[180px]">MONTANT HT</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {items.map((item) => {
-                                    const montant = (Number(item.quantite) || 0) * (Number(item.prixUnitaire) || 0);
-                                    return (
-                                        <TableRow key={item.id}>
-                                            <TableCell>
-                                                <Input value={item.prix} onChange={(e) => handleItemChange(item.id, 'prix', e.target.value)} className="h-8"/>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input value={item.designation} onChange={(e) => handleItemChange(item.id, 'designation', e.target.value)} className="h-8"/>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input value={item.unite} onChange={(e) => handleItemChange(item.id, 'unite', e.target.value)} className="h-8"/>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input type="number" value={item.quantite} onChange={(e) => handleItemChange(item.id, 'quantite', parseFloat(e.target.value))} className="h-8 text-right"/>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input type="number" value={item.prixUnitaire} onChange={(e) => handleItemChange(item.id, 'prixUnitaire', parseFloat(e.target.value))} className="h-8 text-right"/>
-                                            </TableCell>
-                                            <TableCell className="text-right font-medium">
-                                                {formatCurrency(montant)}
-                                            </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    <div className="flex justify-end">
-                        <div className="w-full max-w-sm space-y-2">
-                             <div className="flex justify-between">
-                                <span>MONTANT HT:</span>
-                                <span>{formatCurrency(totalHT)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>TVA 20%:</span>
-                                <span>{formatCurrency(tva)}</span>
-                            </div>
-                            <div className="flex justify-between font-bold text-lg border-t pt-2">
-                                <span>MONTANT TTC:</span>
-                                <span className="text-primary">{formatCurrency(totalTTC)}</span>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex flex-col items-start gap-4">
-                     <div className="w-full space-y-2">
-                        <Label htmlFor="total-in-words">Arrêté la présente facture à la somme de:</Label>
-                        <Textarea id="total-in-words" placeholder="... euros et ... centimes" />
-                    </div>
-                     <div className="w-full flex justify-between items-center">
-                        <div className="space-y-2">
-                            <Label htmlFor="place-date">Fait à:</Label>
-                            <div className="flex gap-2">
-                                <Input id="place-date" placeholder="Ciudad" className="w-[150px]"/>
-                                <Input type="date" className="w-[150px]" defaultValue={new Date().toISOString().substring(0, 10)}/>
-                            </div>
-                        </div>
-                        <div className="space-y-2 text-center">
-                            <Label>Sello y Firma</Label>
-                            <div className="w-48 h-24 border border-dashed rounded-md flex items-center justify-center text-muted-foreground">
-                                Cachet & Signature
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full flex justify-end gap-2">
-                        <Button variant="outline">Annuler</Button>
-                        <Button>Enregistrer les modifications</Button>
-                    </div>
-                </CardFooter>
-            </Card>
-        </div>
+      <div className="space-y-6 max-w-6xl">
+        <Skeleton className="h-12 w-64" />
+        <Skeleton className="h-96 w-full" />
+      </div>
     );
-}
+  }
+
+  if (!prefactura) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-6 max-w-6xl">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Éditer Préfacture</h1>
+          <p className="text-muted-foreground">
+            Modifie les informations de la préfacture {prefactura.numero}
+          </p>
+        </div>
+      </div>
+
+      {/* Formulario */}
+      <PrefactureForm
+        initialData={{
+          numero: prefactura.numero,
+          fecha: prefactura.fecha.split("T")[0],
+          referenciaProyecto: prefactura.referenciaProyecto || "",
+          clienteId: prefactura.clienteId,
+          lineasDetalle: prefactura.lineasDetalle,
+        }}
+        onSubmit={handleSubmit}
+        isLoading={isSubmitting}
+        submitLabel="Mettre à jour la Préfacture"
+      />
+    </div>
+  );
+};
+
+export default EditPrefacturePage;

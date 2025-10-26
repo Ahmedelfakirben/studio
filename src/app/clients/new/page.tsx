@@ -1,41 +1,65 @@
+"use client";
 
-'use client'
-
-import { PageHeader } from "@/components/page-header";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import { ClientForm } from "@/components/clients/client-form";
+import { clientesService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
-export default function NewClientPage() {
+const NewClientPage: React.FC = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (data: any) => {
+    try {
+      setIsLoading(true);
+      await clientesService.create(data);
+      toast({
+        title: "Éxito",
+        description: "Cliente creado correctamente",
+      });
+      router.push("/clients");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al crear el cliente",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title="Créer un nouveau Client" />
-      <Card>
-        <CardHeader>
-            <CardTitle>Informations du Client</CardTitle>
-            <CardDescription>Remplissez les détails ci-dessous pour ajouter un nouveau client.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="client-name">Raison Sociale / Nom</Label>
-                <Input id="client-name" placeholder="Ex: Constructa S.A." />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="client-address">Adresse</Label>
-                <Textarea id="client-address" placeholder="Ex: 123 Rue du Projet, 75000 Paris" />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="client-vat">N° de TVA</Label>
-                <Input id="client-vat" placeholder="Ex: FR 12 345678901" />
-            </div>
-        </CardContent>
-        <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline">Annuler</Button>
-            <Button>Enregistrer le Client</Button>
-        </CardFooter>
-      </Card>
+    <div className="space-y-6 max-w-3xl">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Nuevo Cliente</h1>
+          <p className="text-muted-foreground">
+            Completa el formulario para crear un nuevo cliente
+          </p>
+        </div>
+      </div>
+
+      {/* Formulario */}
+      <ClientForm
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        submitLabel="Crear Cliente"
+      />
     </div>
-  )
-}
+  );
+};
+
+export default NewClientPage;

@@ -1,113 +1,87 @@
-import { PageHeader } from "@/components/page-header"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { PlusCircle, MoreHorizontal, Search } from "lucide-react"
-import Link from "next/link"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from "@/components/ui/card"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { getAllDeliveryNotes } from "@/lib/data"
-import { SearchInput } from "@/components/search-input"
+"use client";
 
-export default function DeliveryNotesListPage({ searchParams }: { searchParams: { search?: string } }) {
-    const searchTerm = searchParams.search || '';
-    const deliveryNotes = getAllDeliveryNotes(searchTerm);
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { BonLivraisonTable } from "@/components/bons-livraison/bon-livraison-table";
+import { bonsLivraisonService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-    return (
-        <div className="flex flex-col gap-6">
-            <PageHeader title="Bons de Livraison">
-                <Button asChild>
-                    <Link href="/factures/new">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Créer un bon
-                    </Link>
-                </Button>
-            </PageHeader>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Liste des Bons de Livraison</CardTitle>
-                    <CardDescription>Consultez et gérez tous vos bons de livraison.</CardDescription>
-                     <div className="relative mt-4">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <SearchInput placeholder="Filtrer par N°, client ou statut..." />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Bon de Livraison</TableHead>
-                                <TableHead>Client</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead className="text-center">Statut</TableHead>
-                                <TableHead>
-                                    <span className="sr-only">Actions</span>
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {deliveryNotes.map((note) => (
-                                <TableRow key={note.id}>
-                                    <TableCell className="font-medium">
-                                        <Link href={`/bons-de-livraison/${note.id}`} className="hover:underline">
-                                            {note.id}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell>{note.client}</TableCell>
-                                    <TableCell>{note.date}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant={
-                                            note.status === "Livré" ? "secondary" 
-                                            : note.status === "Annulé" ? "destructive" 
-                                            : "outline"
-                                        }>
-                                            {note.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button aria-haspopup="true" size="icon" variant="ghost">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                    <span className="sr-only">Toggle menu</span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={`/bons-de-livraison/${note.id}`}>Voir le détail</Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem asChild>
-                                                   <Link href={`/bons-de-livraison/${note.id}/edit`}>Modifier</Link>
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+const BonsLivraisonListPage: React.FC = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [bonsLivraison, setBonsLivraison] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchBonsLivraison = async () => {
+    try {
+      setIsLoading(true);
+      const response = await bonsLivraisonService.getAll();
+      setBonsLivraison(response.data);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al cargar los bons de livraison",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBonsLivraison();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await bonsLivraisonService.delete(id);
+      toast({
+        title: "Éxito",
+        description: "Bon de livraison eliminado correctamente",
+      });
+      fetchBonsLivraison();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al eliminar el bon de livraison",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Bons de Livraison</h1>
+          <p className="text-muted-foreground">
+            Gestiona todos los bons de livraison de materiales
+          </p>
         </div>
-    )
-}
+        <Button onClick={() => router.push("/bons-de-livraison/new")}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nouveau BL
+        </Button>
+      </div>
+
+      {/* Tabla */}
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : (
+        <BonLivraisonTable bonsLivraison={bonsLivraison} onDelete={handleDelete} />
+      )}
+    </div>
+  );
+};
+
+export default BonsLivraisonListPage;

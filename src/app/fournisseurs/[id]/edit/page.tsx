@@ -1,51 +1,112 @@
+"use client";
 
-'use client'
-
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-
-// Mock data, in a real app you would fetch this based on params.id
-const fournisseurData: { [key: string]: { name: string, address: string, vat: string } } = {
-    "fourn-001": { name: "Matériaux Express", address: "123 Rue de la Fourniture, 75000 Paris", vat: "FR XX XXXXXXXXX" },
-    "fourn-002": { name: "Béton Pro", address: "456 Avenue du Ciment, 69002 Lyon", vat: "FR XY YYYYYYYYY" },
-    "fourn-003": { name: "Acier Durable S.L.", address: "789 Boulevard de la Ferraille, 13000 Marseille", vat: "FR XZ ZZZZZZZZZ" },
-};
-
+import { ProveedorForm } from "@/components/fournisseur-form";
+import { proveedoresService } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EditFournisseurPage({ params }: { params: { id: string } }) {
-  const fournisseur = fournisseurData[params.id] || { name: "", address: "", vat: "" };
+  const router = useRouter();
+  const { toast } = useToast();
+  const [fournisseur, setFournisseur] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Cargar datos del proveedor
+  useEffect(() => {
+    const fetchFournisseur = async () => {
+      try {
+        setIsLoading(true);
+        // En un entorno real, esto haría una llamada a la API
+        // const response = await proveedoresService.getById(params.id);
+        // setFournisseur(response.data);
+        
+        // Simulamos los datos para desarrollo
+        setTimeout(() => {
+          setFournisseur({
+            id: params.id,
+            razonSocial: "Matériaux Express",
+            email: "contact@materiaux-express.fr",
+            telefono: "+33 123456789",
+            direccion: "123 Rue de la Construction, 75001 Paris, France",
+            numeroTVA: "FR12345678901"
+          });
+          setIsLoading(false);
+        }, 500);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.response?.data?.mensaje || "Error al cargar los datos del proveedor",
+          variant: "destructive",
+        });
+        router.push("/fournisseurs");
+      }
+    };
+
+    fetchFournisseur();
+  }, [params.id, toast, router]);
+
+  // Manejar la actualización del proveedor
+  const handleUpdateFournisseur = async (data: any) => {
+    try {
+      // Adaptamos los datos al formato esperado por la API
+      const formattedData = {
+        ...data,
+        razonSocial: data.nombre,
+      };
+      
+      // En un entorno real, esto haría una llamada a la API
+      // await proveedoresService.update(params.id, formattedData);
+      
+      console.log("Datos enviados al servidor:", formattedData);
+      
+      // Simular un delay para mostrar el efecto de carga
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Éxito",
+        description: "Proveedor actualizado correctamente",
+      });
+      
+      // Redirigir al detalle del proveedor
+      router.push(`/fournisseurs/${params.id}`);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al actualizar el proveedor",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  // Mostrar esqueleto mientras carga
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-full max-w-md" />
+        <Skeleton className="h-[500px] w-full" />
+      </div>
+    );
+  }
+
+  // Adaptamos los nombres de campos para el formulario
+  const formData = {
+    ...fournisseur,
+    nombre: fournisseur.razonSocial
+  };
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title={`Modifier le Fournisseur: ${fournisseur.name}`} />
-      <Card>
-        <CardHeader>
-            <CardTitle>Informations du Fournisseur</CardTitle>
-            <CardDescription>Mettez à jour les détails du fournisseur.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="fournisseur-name">Raison Sociale / Nom</Label>
-                <Input id="fournisseur-name" defaultValue={fournisseur.name} />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="fournisseur-address">Adresse</Label>
-                <Textarea id="fournisseur-address" defaultValue={fournisseur.address} />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="fournisseur-vat">N° de TVA</Label>
-                <Input id="fournisseur-vat" defaultValue={fournisseur.vat} />
-            </div>
-        </CardContent>
-        <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline">Annuler</Button>
-            <Button>Enregistrer les modifications</Button>
-        </CardFooter>
-      </Card>
+    <div className="space-y-6">
+      <PageHeader title={`Modifier ${fournisseur.razonSocial}`} />
+      
+      <ProveedorForm 
+        initialData={formData} 
+        onSubmit={handleUpdateFournisseur} 
+        isEditing={true}
+      />
     </div>
-  )
+  );
 }

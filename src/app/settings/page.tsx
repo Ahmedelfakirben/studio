@@ -1,177 +1,442 @@
+"use client";
 
-'use client';
-import * as React from 'react';
-import { useTheme } from 'next-themes';
-import { PageHeader } from "@/components/page-header"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/lib/api";
+import { Plus, Trash2, KeyRound, Loader2, Shield, User } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface Event {
-    type: string;
-    date: string;
-    user: string;
-    details: string;
+interface Usuario {
+  id: string;
+  email: string;
+  nombre: string;
+  rol: string;
+  createdAt: string;
 }
 
 export default function SettingsPage() {
-    const { theme, setTheme } = useTheme();
-    const [events, setEvents] = React.useState<Event[]>([]);
+  const { user, isAdmin, logout } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    React.useEffect(() => {
-        const storedEvents = JSON.parse(localStorage.getItem('app_events') || '[]');
-        setEvents(storedEvents.sort((a: Event, b: Event) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    }, []);
+  // Formulario de nuevo usuario
+  const [newUser, setNewUser] = useState({
+    nombre: "",
+    email: "",
+    password: "",
+    rol: "usuario",
+  });
 
-    const formatDate = (dateString: string) => {
-        try {
-            return format(new Date(dateString), "d MMM yyyy 'à' HH:mm:ss", { locale: fr });
-        } catch (error) {
-            return "Date invalide";
-        }
-    };
+  // Reset password
+  const [newPassword, setNewPassword] = useState("");
 
-    return (
-        <div className="flex flex-col gap-6">
-            <PageHeader title="Paramètres" />
-            <Tabs defaultValue="profil" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="profil">Profil</TabsTrigger>
-                    <TabsTrigger value="entreprise">Entreprise</TabsTrigger>
-                    <TabsTrigger value="apparence">Apparence</TabsTrigger>
-                    <TabsTrigger value="historique">Historique</TabsTrigger>
-                </TabsList>
-                <TabsContent value="profil">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Profil</CardTitle>
-                            <CardDescription>Gérez les informations de votre profil public.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Nom</Label>
-                                <Input id="name" defaultValue="Admin Doe" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" defaultValue="admin@aly-tp.fr" />
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button>Enregistrer les modifications</Button>
-                        </CardFooter>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="entreprise">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Entreprise</CardTitle>
-                            <CardDescription>Mettez à jour les informations de votre entreprise.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="company-name">Nom de l'entreprise</Label>
-                                <Input id="company-name" defaultValue="A.L.Y Travaux Publique" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="vat">Numéro de TVA</Label>
-                                <Input id="vat" defaultValue="FR 12 345678901" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="address">Adresse</Label>
-                                <Textarea id="address" defaultValue="123 Rue du Chantier, 75000 Paris" />
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button>Enregistrer les modifications</Button>
-                        </CardFooter>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="apparence">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Apparence</CardTitle>
-                            <CardDescription>Personnalisez l'apparence de l'application.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="dark-mode" className="text-base">Thème Sombre</Label>
-                                    <p className="text-sm text-muted-foreground">
-                                        Activer pour une interface moins lumineuse.
-                                    </p>
-                                </div>
-                                <Switch 
-                                    id="dark-mode"
-                                    checked={theme === 'dark'}
-                                    onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                                />
-                            </div>
-                             <div className="flex items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="compact-mode" className="text-base">Mode Compact</Label>
-                                    <p className="text-sm text-muted-foreground">
-                                        Réduire les espacements pour afficher plus d'informations.
-                                    </p>
-                                </div>
-                                <Switch id="compact-mode" disabled />
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                 <TabsContent value="historique">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Journal des modifications</CardTitle>
-                            <CardDescription>
-                                Liste de tous les événements importants enregistrés dans l'application. Cette liste est en lecture seule.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="border rounded-lg overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[200px]">Date</TableHead>
-                                            <TableHead className="w-[150px]">Utilisateur</TableHead>
-                                            <TableHead className="w-[180px]">Type d'événement</TableHead>
-                                            <TableHead>Détails</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {events.length > 0 ? (
-                                            events.map((event, index) => (
-                                                <TableRow key={index}>
-                                                    <TableCell className="font-medium">{formatDate(event.date)}</TableCell>
-                                                    <TableCell>{event.user}</TableCell>
-                                                    <TableCell>
-                                                        <Badge variant="outline">{event.type}</Badge>
-                                                    </TableCell>
-                                                    <TableCell>{event.details}</TableCell>
-                                                </TableRow>
-                                            ))
-                                        ) : (
-                                            <TableRow>
-                                                <TableCell colSpan={4} className="h-24 text-center">
-                                                    Aucun événement enregistré pour le moment.
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-        </div>
-    )
+  useEffect(() => {
+    if (!isAdmin) {
+      router.push("/dashboard");
+      return;
+    }
+    fetchUsuarios();
+  }, [isAdmin]);
+
+  const fetchUsuarios = async () => {
+    try {
+      setIsLoading(true);
+      const response = await authService.getAllUsers();
+      setUsuarios(response.data);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Error al cargar los usuarios",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      await authService.createUser(newUser);
+      toast({
+        title: "Éxito",
+        description: "Usuario creado correctamente",
+      });
+      setIsCreateDialogOpen(false);
+      setNewUser({ nombre: "", email: "", password: "", rol: "usuario" });
+      fetchUsuarios();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al crear el usuario",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUserId) return;
+
+    setIsSubmitting(true);
+    try {
+      await authService.resetPassword(selectedUserId, newPassword);
+      toast({
+        title: "Éxito",
+        description: "Contraseña actualizada correctamente",
+      });
+      setIsResetDialogOpen(false);
+      setNewPassword("");
+      setSelectedUserId(null);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al resetear la contraseña",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteUserId) return;
+
+    try {
+      await authService.deleteUser(deleteUserId);
+      toast({
+        title: "Éxito",
+        description: "Usuario eliminado correctamente",
+      });
+      setDeleteUserId(null);
+      fetchUsuarios();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.mensaje || "Error al eliminar el usuario",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (!isAdmin) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
+        <p className="text-muted-foreground">
+          Gestion des utilisateurs et configuration du système
+        </p>
+      </div>
+
+      {/* Información del usuario actual */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Votre Compte</CardTitle>
+          <CardDescription>Informations de votre session actuelle</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">{user?.nombre}</p>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
+            </div>
+            <Badge variant="default">
+              <Shield className="mr-1 h-3 w-3" />
+              {user?.rol === "admin" ? "Administrateur" : "Utilisateur"}
+            </Badge>
+          </div>
+          <Button variant="outline" onClick={logout} className="w-full sm:w-auto">
+            Déconnexion
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Gestión de usuarios */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Gestion des Utilisateurs</CardTitle>
+              <CardDescription>
+                Créer, modifier et supprimer des utilisateurs
+              </CardDescription>
+            </div>
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nouvel Utilisateur
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Rôle</TableHead>
+                  <TableHead>Date de création</TableHead>
+                  <TableHead className="w-[150px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {usuarios.map((usuario) => (
+                  <TableRow key={usuario.id}>
+                    <TableCell className="font-medium">{usuario.nombre}</TableCell>
+                    <TableCell>{usuario.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={usuario.rol === "admin" ? "default" : "secondary"}>
+                        {usuario.rol === "admin" ? (
+                          <><Shield className="mr-1 h-3 w-3" />Admin</>
+                        ) : (
+                          <><User className="mr-1 h-3 w-3" />User</>
+                        )}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(usuario.createdAt).toLocaleDateString("fr-FR")}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUserId(usuario.id);
+                            setIsResetDialogOpen(true);
+                          }}
+                        >
+                          <KeyRound className="h-4 w-4" />
+                        </Button>
+                        {usuario.id !== user?.id && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDeleteUserId(usuario.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Dialog: Crear Usuario */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent>
+          <form onSubmit={handleCreateUser}>
+            <DialogHeader>
+              <DialogTitle>Créer un Nouvel Utilisateur</DialogTitle>
+              <DialogDescription>
+                Remplissez les informations pour créer un nouvel utilisateur
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="nombre">Nom complet *</Label>
+                <Input
+                  id="nombre"
+                  value={newUser.nombre}
+                  onChange={(e) => setNewUser({ ...newUser, nombre: e.target.value })}
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Mot de passe *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  required
+                  disabled={isSubmitting}
+                  minLength={6}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="rol">Rôle *</Label>
+                <Select
+                  value={newUser.rol}
+                  onValueChange={(value) => setNewUser({ ...newUser, rol: value })}
+                  disabled={isSubmitting}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="usuario">Utilisateur</SelectItem>
+                    <SelectItem value="admin">Administrateur</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateDialogOpen(false)}
+                disabled={isSubmitting}
+              >
+                Annuler
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Créer
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Reset Password */}
+      <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+        <DialogContent>
+          <form onSubmit={handleResetPassword}>
+            <DialogHeader>
+              <DialogTitle>Réinitialiser le Mot de Passe</DialogTitle>
+              <DialogDescription>
+                Entrez le nouveau mot de passe pour cet utilisateur
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">Nouveau mot de passe *</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  disabled={isSubmitting}
+                  minLength={6}
+                  placeholder="Minimum 6 caractères"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsResetDialogOpen(false);
+                  setNewPassword("");
+                }}
+                disabled={isSubmitting}
+              >
+                Annuler
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Réinitialiser
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* AlertDialog: Eliminar Usuario */}
+      <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action ne peut pas être annulée. Cela supprimera définitivement
+              l'utilisateur et toutes ses données associées.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteUser}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
 }

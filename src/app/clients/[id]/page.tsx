@@ -1,229 +1,91 @@
-import { PageHeader } from "@/components/page-header"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, MoreHorizontal, PlusCircle } from "lucide-react"
-import Link from "next/link"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from "@/components/ui/card"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { getClientById } from "@/lib/data"
+"use client";
 
+import React, { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Edit } from "lucide-react";
+import { ClientDetail } from "@/components/clients/client-detail";
+import { clientesService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ClientDetailPage({ params }: { params: { id: string } }) {
-    const client = getClientById(params.id);
-    
-    if (!client) {
-        return (
-             <div className="flex flex-col gap-6">
-                <PageHeader title="Client Inconnu">
-                     <Button variant="outline" asChild>
-                        <Link href="/clients">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Retour aux clients
-                        </Link>
-                    </Button>
-                </PageHeader>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Client non trouvé</CardTitle>
-                        <CardDescription>Le client que vous recherchez n'existe pas.</CardDescription>
-                    </CardHeader>
-                </Card>
-             </div>
-        )
+const ClientDetailPage: React.FC = () => {
+  const router = useRouter();
+  const params = useParams();
+  const { toast } = useToast();
+  const [cliente, setCliente] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const clientId = params.id as string;
+
+  useEffect(() => {
+    const fetchCliente = async () => {
+      try {
+        setIsLoading(true);
+        const response = await clientesService.getById(clientId);
+        setCliente(response.data);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.response?.data?.mensaje || "Error al cargar el cliente",
+          variant: "destructive",
+        });
+        router.push("/clients");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (clientId) {
+      fetchCliente();
     }
+  }, [clientId]);
 
+  if (isLoading) {
     return (
-        <div className="flex flex-col gap-6">
-            <PageHeader title={client.name}>
-                <Button variant="outline" asChild>
-                    <Link href="/clients">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Retour aux clients
-                    </Link>
-                </Button>
-            </PageHeader>
-            <Tabs defaultValue="factures">
-                <div className="flex justify-between items-center">
-                    <TabsList>
-                        <TabsTrigger value="factures">Factures ({client.factures.length})</TabsTrigger>
-                        <TabsTrigger value="prefactures">Préfactures ({client.prefactures.length})</TabsTrigger>
-                        <TabsTrigger value="bons-de-livraison">Bons de Livraison ({client.bonsDeLivraison.length})</TabsTrigger>
-                    </TabsList>
-                    <Button asChild>
-                        <Link href="/factures/new">
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Créer un document
-                        </Link>
-                    </Button>
-                </div>
-                <TabsContent value="factures">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Factures</CardTitle>
-                            <CardDescription>Liste des factures pour {client.name}.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Facture</TableHead>
-                                        <TableHead>Date d'émission</TableHead>
-                                        <TableHead className="text-right">Montant</TableHead>
-                                        <TableHead className="text-center">Statut</TableHead>
-                                        <TableHead><span className="sr-only">Actions</span></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {client.factures.map((invoice) => (
-                                        <TableRow key={invoice.id}>
-                                            <TableCell className="font-medium">
-                                                <Link href={`/factures/${invoice.id}`} className="hover:underline">
-                                                    {invoice.id}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell>{invoice.date}</TableCell>
-                                            <TableCell className="text-right">{invoice.amount}</TableCell>
-                                            <TableCell className="text-center">
-                                                <Badge variant={
-                                                    invoice.status === "Payée" ? "secondary" : invoice.status === "En retard" ? "destructive" : "outline"
-                                                }>
-                                                    {invoice.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                                                    <DropdownMenuContent><DropdownMenuItem>Voir</DropdownMenuItem></DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="prefactures">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Préfactures</CardTitle>
-                            <CardDescription>Liste des préfactures pour {client.name}.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Préfacture</TableHead>
-                                        <TableHead>Date d'émission</TableHead>
-                                        <TableHead className="text-right">Montant</TableHead>
-                                        <TableHead className="text-center">Statut</TableHead>
-                                        <TableHead><span className="sr-only">Actions</span></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {client.prefactures.map((invoice) => (
-                                        <TableRow key={invoice.id}>
-                                            <TableCell className="font-medium">
-                                                <Link href={`/prefactures/${invoice.id}`} className="hover:underline">
-                                                    {invoice.id}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell>{invoice.date}</TableCell>
-                                            <TableCell className="text-right">{invoice.amount}</TableCell>
-                                            <TableCell className="text-center">
-                                                <Badge variant={
-                                                    invoice.status === "Approuvée" ? "secondary" : invoice.status === "Refusée" ? "destructive" : "outline"
-                                                }>
-                                                    {invoice.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                                                    <DropdownMenuContent><DropdownMenuItem>Voir</DropdownMenuItem></DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="bons-de-livraison">
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Bons de Livraison</CardTitle>
-                            <CardDescription>Liste des bons de livraison pour {client.name}.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Bon de Livraison</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead className="text-center">Statut</TableHead>
-                                        <TableHead><span className="sr-only">Actions</span></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {client.bonsDeLivraison.map((note) => (
-                                        <TableRow key={note.id}>
-                                            <TableCell className="font-medium">
-                                                <Link href={`/bons-de-livraison/${note.id}`} className="hover:underline">
-                                                    {note.id}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell>{note.date}</TableCell>
-                                            <TableCell className="text-center">
-                                                <Badge variant={
-                                                    note.status === "Livré" ? "secondary" 
-                                                    : note.status === "Annulé" ? "destructive" 
-                                                    : "outline"
-                                                }>
-                                                    {note.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                                                    <DropdownMenuContent><DropdownMenuItem>Voir</DropdownMenuItem></DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+      <div className="space-y-6">
+        <Skeleton className="h-12 w-64" />
+        <Skeleton className="h-64 w-full" />
+        <div className="grid grid-cols-3 gap-4">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
         </div>
-    )
-}
+      </div>
+    );
+  }
+
+  if (!cliente) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {cliente.razonSocial}
+            </h1>
+            <p className="text-muted-foreground">
+              Detalles del cliente
+            </p>
+          </div>
+        </div>
+        <Button onClick={() => router.push(`/clients/${clientId}/edit`)}>
+          <Edit className="mr-2 h-4 w-4" />
+          Editar
+        </Button>
+      </div>
+
+      {/* Detalle */}
+      <ClientDetail cliente={cliente} />
+    </div>
+  );
+};
+
+export default ClientDetailPage;
