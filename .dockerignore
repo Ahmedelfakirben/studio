@@ -1,0 +1,74 @@
+# Dependencias
+node_modules
+backend/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de desarrollo
+.next
+.nuxt
+dist
+build
+out
+.cache
+
+# Archivos de entorno
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+
+# Base de datos local
+backend/dev.db
+backend/dev.db-journal
+backend/*.db
+backend/*.db-journal
+backend/data/*.db
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Logs
+logs
+*.log
+
+# Testing
+coverage
+.nyc_output
+
+# Documentación (opcional)
+*.md
+!README.md
+docs
+CHECKLIST_RAPIDO.md
+DIAGNOSTICO_Y_SOLUCIONES.md
+MODULO_CLIENTES_IMPLEMENTADO.md
+MODULO_FACTURAS_COMPLETADO.md
+MODULO_PREFACTURAS_COMPLETADO.md
+TROUBLESHOOTING_FACTURAS.md
+
+# Scripts de diagnóstico
+diagnostico.bat
+diagnostico.sh
+
+# Archivos temporales
+tmp
+temp
+*.tmp
