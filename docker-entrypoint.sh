@@ -24,6 +24,8 @@ npx prisma generate
 echo "🌱 Checking if database needs seeding..."
 if ! npx prisma db execute --stdin <<< "SELECT * FROM Usuario LIMIT 1;" > /dev/null 2>&1; then
   echo "🌱 Seeding database with initial data..."
+  # Instalar ts-node temporalmente para ejecutar el seed
+  npm install --no-save ts-node
   npm run seed || echo "⚠️  Seed failed or already executed"
 else
   echo "✅ Database already contains data, skipping seed"
@@ -38,15 +40,15 @@ BACKEND_PID=$!
 # Frontend Initialization
 # ================================
 echo "🎨 Starting Frontend..."
-cd /app/frontend
 
 # Esperar a que el backend esté listo
 echo "⏳ Waiting for backend to be ready..."
 sleep 5
 
-# Iniciar Frontend
+# Iniciar Frontend usando standalone build
 echo "🌐 Starting Frontend on port ${FRONTEND_PORT:-9002}..."
-node server.js &
+cd /app/frontend/.next/standalone
+PORT=${FRONTEND_PORT:-9002} node server.js &
 FRONTEND_PID=$!
 
 # ================================

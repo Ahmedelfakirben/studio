@@ -12,8 +12,8 @@ WORKDIR /app/backend
 COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
 
-# Instalar dependencias
-RUN npm ci --only=production
+# Instalar TODAS las dependencias (incluyendo devDependencies para build)
+RUN npm ci
 
 # Copiar código fuente del backend
 COPY backend/ ./
@@ -23,6 +23,9 @@ RUN npx prisma generate
 
 # Compilar TypeScript
 RUN npm run build
+
+# Limpiar devDependencies después del build
+RUN npm prune --production
 
 # ================================
 # Stage 2: Build Frontend
