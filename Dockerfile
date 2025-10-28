@@ -7,7 +7,7 @@
 FROM node:18-alpine AS backend-builder
 
 # Force cache bust - change this value to force rebuild
-ARG CACHEBUST=20251028_1720
+ARG CACHEBUST=20251028_1745
 
 WORKDIR /app/backend
 
@@ -15,7 +15,8 @@ WORKDIR /app/backend
 COPY backend/ ./
 
 # Instalar TODAS las dependencias (incluyendo devDependencies para build)
-RUN npm ci
+# Usar --include=dev para asegurar que devDependencies se instalen
+RUN npm ci --include=dev
 
 # Generar Prisma Client
 RUN npx prisma generate
