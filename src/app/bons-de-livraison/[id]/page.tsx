@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Edit, Download } from "lucide-react";
 import { BonLivraisonDetail } from "@/components/bons-livraison/bon-livraison-detail";
+import { BonLivraisonPrint } from "@/components/bons-livraison/bon-livraison-print";
 import { bonsLivraisonService } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,37 +57,45 @@ const BonLivraisonDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              BL {bonLivraison.numero}
-            </h1>
-            <p className="text-muted-foreground">
-              {bonLivraison.cliente.razonSocial}
-            </p>
+    <>
+      {/* Vista de pantalla - con botones */}
+      <div className="space-y-6 print:hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                BL {bonLivraison.numero}
+              </h1>
+              <p className="text-muted-foreground">
+                {bonLivraison.cliente.razonSocial}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.print()}>
+              <Download className="mr-2 h-4 w-4" />
+              Imprimer / PDF
+            </Button>
+            <Button onClick={() => router.push(`/bons-de-livraison/${bonId}/edit`)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Éditer
+            </Button>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => window.print()}>
-            <Download className="mr-2 h-4 w-4" />
-            Imprimer
-          </Button>
-          <Button onClick={() => router.push(`/bons-de-livraison/${bonId}/edit`)}>
-            <Edit className="mr-2 h-4 w-4" />
-            Éditer
-          </Button>
-        </div>
+
+        {/* Detalle para ver en pantalla */}
+        <BonLivraisonDetail bonLivraison={bonLivraison} />
       </div>
 
-      {/* Detalle */}
-      <BonLivraisonDetail bonLivraison={bonLivraison} />
-    </div>
+      {/* Vista de impresión - profesional */}
+      <div className="hidden print:block">
+        <BonLivraisonPrint bonLivraison={bonLivraison} />
+      </div>
+    </>
   );
 };
 
