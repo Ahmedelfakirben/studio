@@ -7,7 +7,7 @@
 FROM node:18-alpine AS backend-builder
 
 # Force cache bust - change this value to force rebuild
-ARG CACHEBUST=20251028_1755
+ARG CACHEBUST=20251028_1800
 
 WORKDIR /app/backend
 
@@ -34,14 +34,11 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app
 
-# Copiar archivos de dependencias del frontend
-COPY package*.json ./
-
-# Instalar dependencias
-RUN npm ci
-
-# Copiar código fuente del frontend (todo el proyecto)
+# Copiar código fuente del frontend PRIMERO (todo el proyecto)
 COPY . .
+
+# Instalar dependencias DESPUÉS de copiar el código
+RUN npm ci
 
 # Debug: Verificar que los archivos se copiaron correctamente
 RUN echo "🔍 Checking directory structure..." && \
