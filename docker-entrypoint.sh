@@ -9,6 +9,12 @@ echo "🚀 Starting ALY Gestion Application..."
 echo "📦 Initializing Backend..."
 cd /app/backend
 
+# Debug: Verificar estructura de directorios
+echo "🔍 Checking directory structure..."
+ls -la
+echo "🔍 Checking prisma directory..."
+ls -la prisma/ || echo "❌ prisma directory not found"
+
 # Crear directorio de datos si no existe
 mkdir -p /app/backend/data
 
