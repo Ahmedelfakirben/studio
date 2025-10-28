@@ -6,10 +6,7 @@ import { CreditCard, Fuel, Hammer } from "lucide-react";
 import { getRecentExpensesFromAPI } from "@/lib/dashboard-service";
 import { useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
-
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
-};
+import { formatCurrency } from "@/lib/formatters";
 
 const iconMap = {
     'Achat Facture': CreditCard,

@@ -13,10 +13,7 @@ import { Label } from '@/components/ui/label';
 import { locationMaterielService } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
-};
+import { formatCurrency } from '@/lib/formatters';
 
 interface RegistroMaterial {
     id: string;

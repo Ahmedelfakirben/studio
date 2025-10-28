@@ -47,14 +47,14 @@ const EditClientPage: React.FC = () => {
       setIsSubmitting(true);
       await clientesService.update(clientId, data);
       toast({
-        title: "Éxito",
-        description: "Cliente actualizado correctamente",
+        title: "Succès",
+        description: "Client mis à jour avec succès",
       });
       router.push(`/clients/${clientId}`);
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.response?.data?.mensaje || "Error al actualizar el cliente",
+        title: "Erreur",
+        description: error.response?.data?.mensaje || "Erreur lors de la mise à jour du client",
         variant: "destructive",
       });
     } finally {
@@ -83,9 +83,9 @@ const EditClientPage: React.FC = () => {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Editar Cliente</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Modifier Client</h1>
           <p className="text-muted-foreground">
-            Modifica la información del cliente
+            Modifiez les informations du client
           </p>
         </div>
       </div>

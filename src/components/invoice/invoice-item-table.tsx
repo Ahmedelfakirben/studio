@@ -27,7 +27,7 @@ export function InvoiceItemTable({ items }: InvoiceItemTableProps) {
     const montantTTC = montantHT + tva;
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MAD' }).format(amount);
     };
 
     return (

@@ -18,14 +18,14 @@ const NewClientPage: React.FC = () => {
       setIsLoading(true);
       await clientesService.create(data);
       toast({
-        title: "Éxito",
-        description: "Cliente creado correctamente",
+        title: "Succès",
+        description: "Client créé avec succès",
       });
       router.push("/clients");
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.response?.data?.mensaje || "Error al crear el cliente",
+        title: "Erreur",
+        description: error.response?.data?.mensaje || "Erreur lors de la création du client",
         variant: "destructive",
       });
     } finally {
@@ -45,9 +45,9 @@ const NewClientPage: React.FC = () => {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Nuevo Cliente</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Nouveau Client</h1>
           <p className="text-muted-foreground">
-            Completa el formulario para crear un nuevo cliente
+            Remplissez le formulaire pour créer un nouveau client
           </p>
         </div>
       </div>
@@ -56,7 +56,7 @@ const NewClientPage: React.FC = () => {
       <ClientForm
         onSubmit={handleSubmit}
         isLoading={isLoading}
-        submitLabel="Crear Cliente"
+        submitLabel="Créer Client"
       />
     </div>
   );

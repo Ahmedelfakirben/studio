@@ -10,7 +10,7 @@ import { ArrowLeft, Printer, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MAD' }).format(amount);
 };
 
 const niveleuseData = [

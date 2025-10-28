@@ -94,13 +94,13 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Revenu Total (Brut)"
-          value={`${stats.totalRevenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`}
+          value={`${stats.totalRevenue.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}`}
           change={`${stats.salesInvoicesCount} factures émises`}
           icon={DollarSign}
         />
         <StatCard
           title="Dépenses Totales"
-          value={`${stats.totalExpenses.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`}
+          value={`${stats.totalExpenses.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}`}
           change={`${stats.purchaseInvoicesCount} dépenses enregistrées`}
           icon={CreditCard}
         />

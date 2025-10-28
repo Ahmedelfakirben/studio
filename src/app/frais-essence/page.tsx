@@ -47,11 +47,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useSearchParams } from 'next/navigation';
 import { SearchInput } from '@/components/search-input';
 import { fraisEssenceService } from '@/lib/api';
-
-
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
-};
+import { formatCurrency } from '@/lib/formatters';
 
 interface Expense {
     id: string;

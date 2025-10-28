@@ -10,6 +10,7 @@ import {
   import { Badge } from "../ui/badge";
   import { useEffect, useState } from "react";
   import { Skeleton } from "../ui/skeleton";
+  import { formatCurrency } from "@/lib/formatters";
 
   export function RecentInvoices() {
     const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
@@ -92,7 +93,7 @@ import {
                 <p className="text-sm text-muted-foreground">{invoice.numero} - {new Date(invoice.fecha).toLocaleDateString('fr-FR')}</p>
               </div>
                <div className="ml-auto flex flex-col items-end">
-                <span className="font-medium">{invoice.montoTTC.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</span>
+                <span className="font-medium">{formatCurrency(invoice.montoTTC)}</span>
                  <Badge variant={
                     invoice.status === "Payée" ? "secondary" : invoice.status === "En retard" ? "destructive" : "outline"
                 } className="mt-1">

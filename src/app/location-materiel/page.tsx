@@ -32,6 +32,7 @@ import { locationMaterielService } from "@/lib/api"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { formatCurrency } from "@/lib/formatters"
 
 interface LocationMateriel {
     id: string;
@@ -79,10 +80,6 @@ export default function MaterialRentalListPage({ searchParams }: { searchParams:
 
         fetchRentalSheets();
     }, [searchTerm, toast]);
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
-    };
 
     const formatDate = (isoDate: string) => {
         const date = new Date(isoDate);
