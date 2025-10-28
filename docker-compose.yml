@@ -24,7 +24,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:9002}
 
       # JWT
-      JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production}
+      JWT_SECRET: ${JWT_SECRET:-622fa71351110f18a8e8226dd1a75c40c9f29a4f6ea6939b1040e4ca0ff4305c}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
 
       # Database
@@ -33,6 +33,7 @@ services:
       # Frontend
       FRONTEND_PORT: 9002
       BACKEND_URL: http://localhost:3001
+      NEXT_PUBLIC_API_URL: /api
 
     volumes:
       # Persistir base de datos SQLite
@@ -45,7 +46,7 @@ services:
       - aly-network
 
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9002', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ["CMD", "curl", "-f", "http://localhost:9002"]
       interval: 30s
       timeout: 10s
       retries: 3
