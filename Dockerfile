@@ -8,19 +8,11 @@ FROM node:18-alpine AS backend-builder
 
 WORKDIR /app/backend
 
-# Copiar archivos de dependencias del backend
-COPY backend/package*.json ./
-
-# Copiar Prisma schema y migrations (ANTES de npm ci para generar client)
-COPY backend/prisma/schema.prisma ./prisma/schema.prisma
-COPY backend/prisma/seed.ts ./prisma/seed.ts
-COPY backend/prisma/migrations ./prisma/migrations
+# Copiar código fuente completo del backend primero
+COPY backend/ ./
 
 # Instalar TODAS las dependencias (incluyendo devDependencies para build)
 RUN npm ci
-
-# Copiar código fuente del backend
-COPY backend/ ./
 
 # Generar Prisma Client
 RUN npx prisma generate
