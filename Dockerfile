@@ -7,7 +7,7 @@
 FROM node:18-alpine AS backend-builder
 
 # Force cache bust - change this value to force rebuild
-ARG CACHEBUST=20251028_1710
+ARG CACHEBUST=20251028_1720
 
 WORKDIR /app/backend
 
@@ -72,37 +72,36 @@ RUN adduser --system --uid 1001 appuser
 # ================================
 WORKDIR /app/backend
 
-# Copiar backend compilado
-COPY --from=backend-builder /app/backend/dist ./dist
-COPY --from=backend-builder /app/backend/node_modules ./node_modules
-COPY --from=backend-builder /app/backend/prisma ./prisma
-COPY --from=backend-builder /app/backend/package*.json ./
+# Copiar backend compilado (como root para luego cambiar ownership)
+COPY --from=backend-builder --chown=appuser:nodejs /app/backend/dist ./dist
+COPY --from=backend-builder --chown=appuser:nodejs /app/backend/node_modules ./node_modules
+COPY --from=backend-builder --chown=appuser:nodejs /app/backend/prisma ./prisma
+COPY --from=backend-builder --chown=appuser:nodejs /app/backend/package*.json ./
 
 # ================================
 # Frontend Setup
 # ================================
 WORKDIR /app/frontend
 
-# Copiar frontend compilado
-# Nota: public puede no existir si no hay assets estáticos, por eso se usa || true
-COPY --from=frontend-builder /app/.next/standalone ./
-COPY --from=frontend-builder /app/.next/static ./.next/static
-COPY --from=frontend-builder /app/package*.json ./
+# Copiar frontend compilado (con ownership correcto)
+COPY --from=frontend-builder --chown=appuser:nodejs /app/.next/standalone ./
+COPY --from=frontend-builder --chown=appuser:nodejs /app/.next/static ./.next/static
+COPY --from=frontend-builder --chown=appuser:nodejs /app/package*.json ./
 
 # Copiar public si existe (opcional para assets estáticos)
-RUN mkdir -p ./public
+RUN mkdir -p ./public && chown appuser:nodejs ./public
 
 # ================================
 # Scripts y Configuración
 # ================================
 WORKDIR /app
 
-# Copiar script de inicio
-COPY docker-entrypoint.sh .
+# Copiar script de inicio (con ownership y permisos)
+COPY --chown=appuser:nodejs docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
-# Cambiar propiedad a usuario no-root
-RUN chown -R appuser:nodejs /app
+# Crear directorio de datos con permisos correctos
+RUN mkdir -p /app/backend/data && chown -R appuser:nodejs /app/backend/data
 
 USER appuser
 
