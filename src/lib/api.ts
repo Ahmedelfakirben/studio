@@ -1,8 +1,11 @@
 import axios from 'axios';
 
-// En local usamos rewrite de Next a /api -> backend, así evitamos CORS
+// En producción usa NEXT_PUBLIC_API_URL, en local usa rewrite de Next (/api -> backend)
+// Esto evita CORS y permite cambiar fácilmente entre entornos
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   withCredentials: true,
 });
 

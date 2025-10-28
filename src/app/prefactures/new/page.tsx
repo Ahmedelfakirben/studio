@@ -14,28 +14,38 @@ const NewPrefacturePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (data: any) => {
-    console.log('📤 Enviando datos de prefactura:', data);
-    
+    console.log('🔵 ===== CREACIÓN DE PREFACTURA =====');
+    console.log('📤 Endpoint a llamar: /api/prefacturas');
+    console.log('📤 Datos de PREFACTURA a enviar:', JSON.stringify(data, null, 2));
+
     try {
       setIsLoading(true);
       const response = await prefacturasService.create(data);
-      console.log('✅ Respuesta del servidor:', response.data);
-      
+
+      console.log('✅ ===== PREFACTURA CREADA EXITOSAMENTE =====');
+      console.log('✅ Tipo de documento creado: PREFACTURA');
+      console.log('✅ Respuesta del servidor:', JSON.stringify(response.data, null, 2));
+      console.log('✅ ID creado:', response.data.id);
+      console.log('✅ Número creado:', response.data.numero);
+      console.log('✅ Redirigiendo a: /prefactures');
+
       toast({
-        title: "Éxito",
-        description: "Prefactura creada correctamente",
+        title: "Succès",
+        description: `Préfacture ${response.data.numero} créée avec succès`,
       });
       router.push("/prefactures");
     } catch (error: any) {
+      console.error('❌ ===== ERROR AL CREAR PREFACTURA =====');
       console.error('❌ Error completo:', error);
-      
-      const errorMessage = error.response?.data?.mensaje 
+      console.error('❌ Response:', error.response);
+
+      const errorMessage = error.response?.data?.mensaje
         || error.response?.data?.error
-        || error.message 
-        || "Error al crear la prefactura";
-      
+        || error.message
+        || "Erreur lors de la création de la préfacture";
+
       toast({
-        title: "Error",
+        title: "Erreur",
         description: errorMessage,
         variant: "destructive",
       });

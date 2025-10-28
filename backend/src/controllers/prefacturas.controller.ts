@@ -45,13 +45,15 @@ export const getPrefacturaById = async (req: Request, res: Response) => {
 // Crear una nueva prefactura
 export const createPrefactura = async (req: Request, res: Response) => {
   try {
-    console.log('📥 Datos recibidos para crear prefactura:', JSON.stringify(req.body, null, 2));
-    
+    console.log('🔵 ===== BACKEND: CREANDO PREFACTURA =====');
+    console.log('📥 Endpoint llamado: POST /api/prefacturas');
+    console.log('📥 Datos recibidos para crear PREFACTURA:', JSON.stringify(req.body, null, 2));
+
     const { numero, fecha, referenciaProyecto, clienteId, lineasDetalle, montoHT, montTVA, montoTTC } = req.body;
 
     // Validaciones
     if (!numero || !fecha || !clienteId) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         mensaje: 'Faltan campos obligatorios',
         detalles: {
           numero: !numero ? 'requerido' : 'ok',
@@ -75,6 +77,7 @@ export const createPrefactura = async (req: Request, res: Response) => {
     }
 
     console.log('✅ Cliente encontrado:', clienteExiste.razonSocial);
+    console.log('🔵 Llamando a prisma.prefactura.create() - MODELO: Prefactura');
 
     // Crear la prefactura con sus líneas
     const prefactura = await prisma.prefactura.create({
@@ -103,11 +106,19 @@ export const createPrefactura = async (req: Request, res: Response) => {
       }
     });
 
-    console.log('✅ Prefactura creada exitosamente:', prefactura.numero);
+    console.log('✅ ===== PREFACTURA CREADA EN BASE DE DATOS =====');
+    console.log('✅ Tabla utilizada: Prefactura (NO Factura)');
+    console.log('✅ ID generado:', prefactura.id);
+    console.log('✅ Número:', prefactura.numero);
+    console.log('✅ Líneas de detalle:', prefactura.lineasDetalle.length);
+    console.log('✅ Enviando respuesta al cliente...');
+
     res.status(201).json(prefactura);
   } catch (error: any) {
-    console.error('❌ Error al crear la prefactura:', error);
-    res.status(500).json({ 
+    console.error('❌ ===== ERROR AL CREAR PREFACTURA =====');
+    console.error('❌ Error:', error);
+    console.error('❌ Mensaje:', error.message);
+    res.status(500).json({
       mensaje: 'Error al crear la prefactura',
       error: error.message,
       detalles: process.env.NODE_ENV === 'development' ? error : undefined

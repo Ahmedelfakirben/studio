@@ -8,7 +8,8 @@
       "Bash(node -e:*)",
       "Bash(code:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(curl -I http://localhost:3001)"
     ],
     "deny": [],
     "ask": []
