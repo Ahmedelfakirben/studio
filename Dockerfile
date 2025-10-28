@@ -24,8 +24,8 @@ RUN npx prisma generate
 # Compilar TypeScript
 RUN npm run build
 
-# Limpiar devDependencies después del build
-RUN npm prune --production
+# NO hacer prune aquí - necesitamos Prisma CLI en runtime para migrations
+# El tamaño extra es aceptable para tener Prisma funcionando
 
 # ================================
 # Stage 2: Build Frontend
@@ -57,8 +57,12 @@ FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Instalar dumb-init para manejo correcto de señales
-RUN apk add --no-cache dumb-init
+# Instalar dependencias del sistema (OpenSSL para Prisma, dumb-init para señales, curl para healthcheck)
+RUN apk add --no-cache \
+    dumb-init \
+    openssl \
+    openssl-dev \
+    curl
 
 # Crear usuario no-root
 RUN addgroup --system --gid 1001 nodejs
@@ -114,9 +118,9 @@ ENV PORT=3001
 ENV FRONTEND_PORT=9002
 ENV DATABASE_URL="file:/app/backend/data/prod.db"
 
-# Health check
+# Health check usando curl (más confiable que node -e)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:9002', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD curl -f http://localhost:9002 || exit 1
 
 # Punto de entrada
 ENTRYPOINT ["dumb-init", "--"]
