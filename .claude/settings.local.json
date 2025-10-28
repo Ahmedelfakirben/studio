@@ -10,7 +10,8 @@
       "Bash(npm run dev:*)",
       "Bash(npm run build:*)",
       "Bash(curl -I http://localhost:3001)",
-      "Bash(docker build:*)"
+      "Bash(docker build:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
