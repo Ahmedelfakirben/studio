@@ -287,12 +287,12 @@ export function BonRecepcionPrint({ bonRecepcion }: BonRecepcionPrintProps) {
         </div>
 
         <div className="partie">
-          <div className="partie-title">Client</div>
+          <div className="partie-title">Fournisseur</div>
           <div className="partie-content">
-            <div className="name">{bonRecepcion.cliente.razonSocial}</div>
-            <div>{bonRecepcion.cliente.direccion}</div>
-            {bonRecepcion.cliente.numeroTVA && (
-              <div>N° TVA: {bonRecepcion.cliente.numeroTVA}</div>
+            <div className="name">{bonRecepcion.proveedor.razonSocial}</div>
+            <div>{bonRecepcion.proveedor.direccion}</div>
+            {bonRecepcion.proveedor.numeroTVA && (
+              <div>N° TVA: {bonRecepcion.proveedor.numeroTVA}</div>
             )}
           </div>
         </div>

@@ -29,7 +29,7 @@ interface FacturaAchatPrintProps {
   facturaAchat: FacturaAchat;
 }
 
-export function FacturaAchatPrint({ factura }: FacturaAchatPrintProps) {
+export function FacturaAchatPrint({ facturaAchat }: FacturaAchatPrintProps) {
   // Convertir número a letras en francés (simplificado)
   const numeroALetras = (num: number): string => {
     const unidades = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
@@ -387,12 +387,12 @@ export function FacturaAchatPrint({ factura }: FacturaAchatPrintProps) {
         </div>
 
         <div className="partie">
-          <div className="partie-title">Client</div>
+          <div className="partie-title">Fournisseur</div>
           <div className="partie-content">
-            <div className="name">{facturaAchat.cliente.razonSocial}</div>
-            <div>{facturaAchat.cliente.direccion}</div>
-            {facturaAchat.cliente.numeroTVA && (
-              <div>N° TVA: {facturaAchat.cliente.numeroTVA}</div>
+            <div className="name">{facturaAchat.proveedor.razonSocial}</div>
+            <div>{facturaAchat.proveedor.direccion}</div>
+            {facturaAchat.proveedor.numeroTVA && (
+              <div>N° TVA: {facturaAchat.proveedor.numeroTVA}</div>
             )}
           </div>
         </div>

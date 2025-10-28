@@ -17,16 +17,16 @@ export const obtenerFraisEssence = async (req: Request, res: Response) => {
 // Obtener un gasto de combustible por ID
 export const obtenerFraisEssencePorId = async (req: Request, res: Response) => {
   const { id } = req.params;
-  
+
   try {
     const fraisEssence = await prisma.fraisEssence.findUnique({
-      where: { id: Number(id) }
+      where: { id }
     });
-    
+
     if (!fraisEssence) {
       return res.status(404).json({ mensaje: 'Gasto de combustible no encontrado' });
     }
-    
+
     return res.json(fraisEssence);
   } catch (error) {
     console.error('Error al obtener gasto de combustible:', error);
@@ -36,31 +36,23 @@ export const obtenerFraisEssencePorId = async (req: Request, res: Response) => {
 
 // Crear un nuevo gasto de combustible
 export const crearFraisEssence = async (req: Request, res: Response) => {
-  const { 
-    fecha, 
-    vehiculo, 
-    kilometraje, 
-    litros, 
-    precioLitro, 
-    total, 
-    conductor, 
-    notas 
+  const {
+    fecha,
+    numeroBL,
+    designacionServicio,
+    monto
   } = req.body;
-  
+
   try {
     const nuevoFraisEssence = await prisma.fraisEssence.create({
       data: {
         fecha: new Date(fecha),
-        vehiculo,
-        kilometraje,
-        litros,
-        precioLitro,
-        total,
-        conductor,
-        notas
+        numeroBL,
+        designacionServicio,
+        monto
       }
     });
-    
+
     return res.status(201).json(nuevoFraisEssence);
   } catch (error) {
     console.error('Error al crear gasto de combustible:', error);
@@ -71,42 +63,34 @@ export const crearFraisEssence = async (req: Request, res: Response) => {
 // Actualizar un gasto de combustible existente
 export const actualizarFraisEssence = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { 
-    fecha, 
-    vehiculo, 
-    kilometraje, 
-    litros, 
-    precioLitro, 
-    total, 
-    conductor, 
-    notas 
+  const {
+    fecha,
+    numeroBL,
+    designacionServicio,
+    monto
   } = req.body;
-  
+
   try {
     // Verificar si el gasto de combustible existe
     const fraisEssenceExiste = await prisma.fraisEssence.findUnique({
-      where: { id: Number(id) }
+      where: { id }
     });
-    
+
     if (!fraisEssenceExiste) {
       return res.status(404).json({ mensaje: 'Gasto de combustible no encontrado' });
     }
-    
+
     // Actualizar el gasto de combustible
     const fraisEssenceActualizado = await prisma.fraisEssence.update({
-      where: { id: Number(id) },
+      where: { id },
       data: {
         fecha: fecha ? new Date(fecha) : undefined,
-        vehiculo,
-        kilometraje,
-        litros,
-        precioLitro,
-        total,
-        conductor,
-        notas
+        numeroBL,
+        designacionServicio,
+        monto
       }
     });
-    
+
     return res.json(fraisEssenceActualizado);
   } catch (error) {
     console.error('Error al actualizar gasto de combustible:', error);
@@ -117,22 +101,22 @@ export const actualizarFraisEssence = async (req: Request, res: Response) => {
 // Eliminar un gasto de combustible
 export const eliminarFraisEssence = async (req: Request, res: Response) => {
   const { id } = req.params;
-  
+
   try {
     // Verificar si el gasto de combustible existe
     const fraisEssenceExiste = await prisma.fraisEssence.findUnique({
-      where: { id: Number(id) }
+      where: { id }
     });
-    
+
     if (!fraisEssenceExiste) {
       return res.status(404).json({ mensaje: 'Gasto de combustible no encontrado' });
     }
-    
+
     // Eliminar el gasto de combustible
     await prisma.fraisEssence.delete({
-      where: { id: Number(id) }
+      where: { id }
     });
-    
+
     return res.json({ mensaje: 'Gasto de combustible eliminado correctamente' });
   } catch (error) {
     console.error('Error al eliminar gasto de combustible:', error);

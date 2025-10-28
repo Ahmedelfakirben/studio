@@ -1,0 +1,64 @@
+# ========================================
+# VARIABLES DE ENTORNO PARA COOLIFY
+# ALY Gestion - Copiar y pegar en Coolify
+# ========================================
+
+# INSTRUCCIONES:
+# 1. Ve a tu aplicación en Coolify
+# 2. Click en "Environment Variables"
+# 3. Copia cada línea COMPLETA (incluyendo KEY=VALUE)
+# 4. IMPORTANTE: Reemplaza "tu-dominio.com" con tu dominio real
+
+# ========================================
+# VARIABLES OBLIGATORIAS
+# ========================================
+
+NODE_ENV=production
+PORT=3001
+FRONTEND_PORT=9002
+DATABASE_URL=file:/app/backend/prisma/dev.db
+JWT_SECRET=622fa71351110f18a8e8226dd1a75c40c9f29a4f6ea6939b1040e4ca0ff4305c
+NEXT_PUBLIC_API_URL=https://tu-dominio.com/api
+
+# ========================================
+# NOTAS IMPORTANTES
+# ========================================
+
+# 📝 NEXT_PUBLIC_API_URL:
+#    - DEBE apuntar a tu dominio público de Coolify
+#    - DEBE terminar en /api
+#    - Ejemplos:
+#      → https://aly-gestion.coolify.io/api
+#      → https://aly-sas.elfakir.com/api (tu dominio actual)
+#      → https://app.miempresa.com/api
+
+# 🔐 JWT_SECRET:
+#    - NO cambies este valor si ya tienes usuarios creados
+#    - Si es un despliegue nuevo, puedes generar uno nuevo:
+#      node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# 💾 DATABASE_URL:
+#    - NO cambies este path
+#    - Asegúrate de configurar el volumen en Coolify para /app/backend/prisma
+
+# ========================================
+# CONFIGURACIÓN ADICIONAL EN COOLIFY
+# ========================================
+
+# Puerto Público: 9002
+# Dockerfile: ./Dockerfile
+# Base Directory: /
+# Auto Deploy: Activado (opcional pero recomendado)
+
+# Volumen:
+# Source: /var/lib/coolify/storage/aly-gestion/db
+# Destination: /app/backend/prisma
+
+# ========================================
+# EJEMPLO CON TU DOMINIO ACTUAL
+# ========================================
+
+# Si tu dominio es: aly-sas.elfakir.com
+# Entonces usa:
+
+# NEXT_PUBLIC_API_URL=https://aly-sas.elfakir.com/api

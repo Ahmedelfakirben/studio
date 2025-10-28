@@ -69,7 +69,7 @@ export const login = async (req: Request, res: Response) => {
     jwt.sign(
       payload,
       process.env.JWT_SECRET as string,
-      { expiresIn: process.env.JWT_EXPIRES_IN },
+      { expiresIn: '7d' } as jwt.SignOptions,
       (err, token) => {
         if (err) throw err;
         res.json({ token });

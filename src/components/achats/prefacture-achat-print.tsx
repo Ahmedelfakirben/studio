@@ -29,7 +29,7 @@ interface PrefacturaAchatPrintProps {
   prefacturaAchat: PrefacturaAchat;
 }
 
-export function PrefacturaAchatPrint({ prefactura }: PrefacturaAchatPrintProps) {
+export function PrefacturaAchatPrint({ prefacturaAchat }: PrefacturaAchatPrintProps) {
   // Convertir número a letras en francés (simplificado)
   const numeroALetras = (num: number): string => {
     const unidades = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
@@ -372,7 +372,7 @@ export function PrefacturaAchatPrint({ prefactura }: PrefacturaAchatPrintProps) 
         </div>
         <div className="facture-title">
           <h1>PRÉFACTURE D'ACHAT</h1>
-          <div className="facture-numero">{preprefacturaAchat.numero}</div>
+          <div className="facture-numero">{prefacturaAchat.numero}</div>
         </div>
       </div>
 
@@ -387,12 +387,12 @@ export function PrefacturaAchatPrint({ prefactura }: PrefacturaAchatPrintProps) 
         </div>
 
         <div className="partie">
-          <div className="partie-title">Client</div>
+          <div className="partie-title">Fournisseur</div>
           <div className="partie-content">
-            <div className="name">{prefacturaAchat.cliente.razonSocial}</div>
-            <div>{prefacturaAchat.cliente.direccion}</div>
-            {prefacturaAchat.cliente.numeroTVA && (
-              <div>N° TVA: {prefacturaAchat.cliente.numeroTVA}</div>
+            <div className="name">{prefacturaAchat.proveedor.razonSocial}</div>
+            <div>{prefacturaAchat.proveedor.direccion}</div>
+            {prefacturaAchat.proveedor.numeroTVA && (
+              <div>N° TVA: {prefacturaAchat.proveedor.numeroTVA}</div>
             )}
           </div>
         </div>

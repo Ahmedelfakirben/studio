@@ -6,7 +6,9 @@
       "Bash(git push:*)",
       "Bash(chmod:*)",
       "Bash(node -e:*)",
-      "Bash(code:*)"
+      "Bash(code:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
