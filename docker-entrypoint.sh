@@ -51,10 +51,10 @@ echo "🎨 Starting Frontend..."
 echo "⏳ Waiting for backend to be ready..."
 sleep 5
 
-# Iniciar Frontend usando standalone build
+# Iniciar Frontend usando next start (no standalone)
 echo "🌐 Starting Frontend on port ${FRONTEND_PORT:-9002}..."
-cd /app/frontend
-PORT=${FRONTEND_PORT:-9002} node server.js &
+cd /app
+PORT=${FRONTEND_PORT:-9002} npm run start &
 FRONTEND_PID=$!
 
 # ================================

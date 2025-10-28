@@ -23,7 +23,19 @@ RUN npm run build
 
 # Volver al root y construir frontend
 WORKDIR /app
-RUN npm run build
+
+# Debug: Verificar estructura antes del build
+RUN echo "=== Verificando estructura antes de build ===" && \
+    ls -la && \
+    echo "=== Contenido de src/ ===" && \
+    ls -la src/ && \
+    echo "=== Contenido de tsconfig.json ===" && \
+    cat tsconfig.json && \
+    echo "=== Verificando node_modules ===" && \
+    ls node_modules/@radix-ui/ | head -5
+
+# Build frontend con output verbose
+RUN npm run build --verbose
 
 # Crear directorio para base de datos
 RUN mkdir -p /app/backend/data

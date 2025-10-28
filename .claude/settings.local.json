@@ -11,7 +11,8 @@
       "Bash(npm run build:*)",
       "Bash(curl -I http://localhost:3001)",
       "Bash(docker build:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Read(//c/**)"
     ],
     "deny": [],
     "ask": []
