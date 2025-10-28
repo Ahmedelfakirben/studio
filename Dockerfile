@@ -10,7 +10,11 @@ WORKDIR /app/backend
 
 # Copiar archivos de dependencias del backend
 COPY backend/package*.json ./
-COPY backend/prisma ./prisma/
+
+# Copiar Prisma schema y migrations (ANTES de npm ci para generar client)
+COPY backend/prisma/schema.prisma ./prisma/schema.prisma
+COPY backend/prisma/seed.ts ./prisma/seed.ts
+COPY backend/prisma/migrations ./prisma/migrations
 
 # Instalar TODAS las dependencias (incluyendo devDependencies para build)
 RUN npm ci
