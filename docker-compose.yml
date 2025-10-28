@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # ================================
+  # Aplicación ALY Gestion
+  # ================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aly-gestion
+    restart: unless-stopped
+
+    ports:
+      - "3001:3001"  # Backend API
+      - "9002:9002"  # Frontend
+
+    environment:
+      # Node
+      NODE_ENV: production
+
+      # Backend
+      PORT: 3001
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:9002}
+
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+
+      # Database
+      DATABASE_URL: file:/app/backend/data/prod.db
+
+      # Frontend
+      FRONTEND_PORT: 9002
+      BACKEND_URL: http://localhost:3001
+
+    volumes:
+      # Persistir base de datos SQLite
+      - aly-gestion-db:/app/backend/data
+
+      # Logs (opcional)
+      - aly-gestion-logs:/app/logs
+
+    networks:
+      - aly-network
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9002', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# ================================
+# Volúmenes persistentes
+# ================================
+volumes:
+  aly-gestion-db:
+    driver: local
+    name: aly-gestion-db
+
+  aly-gestion-logs:
+    driver: local
+    name: aly-gestion-logs
+
+# ================================
+# Red
+# ================================
+networks:
+  aly-network:
+    driver: bridge
+    name: aly-network
