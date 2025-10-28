@@ -7,7 +7,7 @@
 FROM node:18-alpine AS backend-builder
 
 # Force cache bust - change this value to force rebuild
-ARG CACHEBUST=20251028_1750
+ARG CACHEBUST=20251028_1755
 
 WORKDIR /app/backend
 
@@ -42,6 +42,18 @@ RUN npm ci
 
 # Copiar código fuente del frontend (todo el proyecto)
 COPY . .
+
+# Debug: Verificar que los archivos se copiaron correctamente
+RUN echo "🔍 Checking directory structure..." && \
+    ls -la && \
+    echo "🔍 Checking src directory..." && \
+    ls -la src/ && \
+    echo "🔍 Checking src/components..." && \
+    ls -la src/components/ && \
+    echo "🔍 Checking src/components/ui..." && \
+    ls -la src/components/ui/ && \
+    echo "🔍 Checking tsconfig.json..." && \
+    cat tsconfig.json
 
 # Copiar backend compilado para que esté disponible durante el build
 COPY --from=backend-builder /app/backend ./backend
