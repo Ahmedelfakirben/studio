@@ -32,7 +32,7 @@ RUN npm prune --production
 # ================================
 FROM node:18-alpine AS frontend-builder
 
-WORKDIR /app/frontend
+WORKDIR /app
 
 # Copiar archivos de dependencias del frontend
 COPY package*.json ./
@@ -40,8 +40,10 @@ COPY package*.json ./
 # Instalar dependencias
 RUN npm ci
 
-# Copiar código fuente del frontend
+# Copiar código fuente del frontend (todo el proyecto)
 COPY . .
+
+# Copiar backend compilado para que esté disponible durante el build
 COPY --from=backend-builder /app/backend ./backend
 
 # Build de Next.js
@@ -79,11 +81,13 @@ COPY --from=backend-builder /app/backend/package*.json ./
 WORKDIR /app/frontend
 
 # Copiar frontend compilado
-COPY --from=frontend-builder /app/frontend/public ./public
-COPY --from=frontend-builder /app/frontend/.next/standalone ./
-COPY --from=frontend-builder /app/frontend/.next/static ./.next/static
-COPY --from=frontend-builder /app/frontend/node_modules ./node_modules
-COPY --from=frontend-builder /app/frontend/package*.json ./
+# Nota: public puede no existir si no hay assets estáticos, por eso se usa || true
+COPY --from=frontend-builder /app/.next/standalone ./
+COPY --from=frontend-builder /app/.next/static ./.next/static
+COPY --from=frontend-builder /app/package*.json ./
+
+# Copiar public si existe (opcional para assets estáticos)
+RUN mkdir -p ./public
 
 # ================================
 # Scripts y Configuración

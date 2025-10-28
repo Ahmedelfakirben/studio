@@ -47,7 +47,7 @@ sleep 5
 
 # Iniciar Frontend usando standalone build
 echo "🌐 Starting Frontend on port ${FRONTEND_PORT:-9002}..."
-cd /app/frontend/.next/standalone
+cd /app/frontend
 PORT=${FRONTEND_PORT:-9002} node server.js &
 FRONTEND_PID=$!
 
