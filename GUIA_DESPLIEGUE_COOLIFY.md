@@ -36,12 +36,21 @@ git push origin main
 
 ### 1.2 Actualizar la configuración de API para producción
 
-Abre `src/lib/api.ts` y verifica que use variables de entorno:
+✅ **YA ESTÁ ACTUALIZADO** - `src/lib/api.ts` ahora usa variables de entorno:
 
 ```typescript
-// Debe verse así:
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Configuración actual (ya aplicada):
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 ```
+
+**Explicación:**
+- En **local**: Usa `/api` (Next.js reescribe automáticamente a `http://localhost:3001/api`)
+- En **producción**: Usa `NEXT_PUBLIC_API_URL` de las variables de entorno de Coolify
 
 ---
 
@@ -94,24 +103,47 @@ FRONTEND_PORT=9002
 # BASE DE DATOS (usar ruta persistente)
 DATABASE_URL=file:/app/backend/prisma/dev.db
 
-# JWT (IMPORTANTE: Usa el mismo que tienes en local)
+# JWT (IMPORTANTE: Genera uno nuevo para producción)
 JWT_SECRET=622fa71351110f18a8e8226dd1a75c40c9f29a4f6ea6939b1040e4ca0ff4305c
 
-# API URL (REEMPLAZAR CON TU DOMINIO REAL)
-NEXT_PUBLIC_API_URL=https://aly-gestion.tu-dominio.com/api
+# Frontend URL (tu dominio completo)
+FRONTEND_URL=https://aly-gestion.tu-dominio.com
+
+# API URL para el frontend (IMPORTANTE: Usar /api para rewrite interno)
+NEXT_PUBLIC_API_URL=/api
+
+# Backend URL interno (solo para rewrites de Next.js)
+BACKEND_URL=http://localhost:3001
 ```
 
-**🔐 IMPORTANTE**:
-- Reemplaza `aly-gestion.tu-dominio.com` con tu dominio real de Coolify
-- Si Coolify te asigna un dominio automático, usa ese
+**🔐 IMPORTANTE sobre NEXT_PUBLIC_API_URL**:
+
+### ⚠️ USAR `/api` NO tu dominio completo
+
+```bash
+# ✅ CORRECTO:
+NEXT_PUBLIC_API_URL=/api
+
+# ❌ INCORRECTO (esto causará problemas):
+NEXT_PUBLIC_API_URL=https://aly-gestion.coolify.io/api
+```
+
+**¿Por qué usar `/api`?**
+
+Porque Next.js tiene configurado un `rewrite` en `next.config.ts` que automáticamente redirige `/api/*` al backend interno (`http://localhost:3001/api/*`). Esto:
+- ✅ Evita problemas de CORS
+- ✅ Funciona tanto en local como en producción
+- ✅ No necesitas cambiar código entre entornos
 
 ### Ejemplo con dominio de Coolify
 
 Si Coolify te asigna: `https://aly-gestion-abc123.coolify.io`
 
-Entonces configura:
+Configura:
 ```bash
-NEXT_PUBLIC_API_URL=https://aly-gestion-abc123.coolify.io/api
+FRONTEND_URL=https://aly-gestion-abc123.coolify.io
+NEXT_PUBLIC_API_URL=/api
+BACKEND_URL=http://localhost:3001
 ```
 
 ---
