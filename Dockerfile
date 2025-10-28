@@ -7,7 +7,7 @@
 FROM node:18-alpine AS backend-builder
 
 # Force cache bust - change this value to force rebuild
-ARG CACHEBUST=20251028_1745
+ARG CACHEBUST=20251028_1750
 
 WORKDIR /app/backend
 
