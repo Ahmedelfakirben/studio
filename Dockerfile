@@ -6,6 +6,9 @@
 # ================================
 FROM node:18-alpine AS backend-builder
 
+# Force cache bust - change this value to force rebuild
+ARG CACHEBUST=20251028_1710
+
 WORKDIR /app/backend
 
 # Copiar código fuente completo del backend primero
